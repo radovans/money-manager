@@ -1,14 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
-		</encoder>
+
+	<property name="LOGS" value="./logs"/>
+	<property resource="application.properties"/>
+
+	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+		<if condition='property("feature.toggles.logging.output.json").contains("true")'>
+			<then>
+				<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+					<!-- For pretty printed JSON use net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator -->
+					<!-- TODO: Use structured logging: https://www.innoq.com/en/blog/structured-logging/ -->
+					<jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator"/>
+					<timestampPattern>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampPattern>
+					<fieldNames>
+						<timestamp>timestamp</timestamp>
+						<levelValue>[ignore]</levelValue>
+						<logger>logger</logger>
+						<message>message</message>
+						<version>[ignore]</version>
+					</fieldNames>
+				</encoder>
+			</then>
+			<else>
+				<layout class="ch.qos.logback.classic.PatternLayout">
+					<Pattern>
+						%black(%d{ISO8601}) %highlight(%-5level) [%green(%X{traceId})] [%green(%X{spanId})] [%blue(%t)] %yellow(%C{1.}):
+						%msg%n%throwable
+					</Pattern>
+				</layout>
+			</else>
+		</if>
 	</appender>
 
 	<root level="info">
-		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="Console"/>
 	</root>
 
-	<logger name="org.testcontainers" level="INFO"/>
-	<logger name="com.github.dockerjava" level="WARN"/>
+	<logger name="org.zalando.logbook" level="trace" additivity="false">
+		<appender-ref ref="Console"/>
+	</logger>
+	<logger name="org.testcontainers" level="INFO" additivity="false">
+		<appender-ref ref="Console"/>
+	</logger>
+	<logger name="com.github.dockerjava" level="WARN" additivity="false">
+		<appender-ref ref="Console"/>
+	</logger>
 </configuration>
