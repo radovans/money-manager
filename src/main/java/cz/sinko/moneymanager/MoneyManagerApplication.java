@@ -1,8 +1,5 @@
 package cz.sinko.moneymanager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +11,6 @@ import cz.sinko.moneymanager.repository.AccountRepository;
 
 @SpringBootApplication
 public class MoneyManagerApplication {
-
-	private final Map<String, String> properties = new HashMap<>();
 
 	@Autowired
 	private AccountRepository accountRepository;
