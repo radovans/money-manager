@@ -1,5 +1,15 @@
 type Query {
-    accounts : [Account]
+    accounts: [Account]
+    accountById(id: ID!): Account
+}
+
+type Mutation {
+    addTransaction(transaction: TransactionInput): Transaction
+}
+
+input TransactionInput {
+    name: String!
+    accountId: ID!
 }
 
 type Account {
