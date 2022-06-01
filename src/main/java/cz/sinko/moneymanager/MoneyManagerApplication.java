@@ -32,8 +32,10 @@ public class MoneyManagerApplication {
 		var skAccount = accountRepository.save(new Account(null, "SK", null));
 		transactionRepository.saveAll(List.of(
 				new Transaction(null, "transaction-1", czAccount),
-				new Transaction(null, "transaction-2", skAccount),
-				new Transaction(null, "transaction-3", skAccount)
+				new Transaction(null, "transaction-2", czAccount),
+				new Transaction(null, "transaction-3", czAccount),
+				new Transaction(null, "transaction-4", skAccount),
+				new Transaction(null, "transaction-5", skAccount)
 		));
 	}
 
