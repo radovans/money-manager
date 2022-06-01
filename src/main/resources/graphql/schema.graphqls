@@ -3,6 +3,12 @@ type Query {
 }
 
 type Account {
-    id: ID
-    name : String
+    id: ID!
+    name: String!
+    transactions: [Transaction]
+}
+
+type Transaction {
+    id: ID!
+    name: String!
 }
