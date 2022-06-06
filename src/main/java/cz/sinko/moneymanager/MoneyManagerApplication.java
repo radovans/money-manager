@@ -1,35 +1,48 @@
 package cz.sinko.moneymanager;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import cz.sinko.moneymanager.model.Account;
-import cz.sinko.moneymanager.repository.AccountRepository;
+import cz.sinko.moneymanager.model.Pokemon;
+import cz.sinko.moneymanager.model.PokemonList;
 
 @SpringBootApplication
 public class MoneyManagerApplication {
 
-	private final Map<String, String> properties = new HashMap<>();
-
-	@Autowired
-	private AccountRepository accountRepository;
-
-	public static void main(String[] args) {
-		SpringApplication.run(MoneyManagerApplication.class, args);
+	@Bean
+	ApplicationRunner applicationRunner(PokemonClient pokemonClient) {
+		return args -> {
+			System.out.println(pokemonClient.pokemons());
+			System.out.println(pokemonClient.pokemon(156l));
+		};
 	}
 
-	@PostConstruct
-	private void postConstruct() {
-		if (accountRepository.findAll().isEmpty()) {
-			accountRepository.save(new Account(null, "CZ"));
-			accountRepository.save(new Account(null, "SK"));
-		}
+	@Bean
+	PokemonClient pokemonClient() {
+		WebClient webClient = WebClient.builder()
+				.baseUrl("https://pokeapi.co/api/v2")
+				.build();
+		HttpServiceProxyFactory factory = new HttpServiceProxyFactory(new WebClientAdapter(webClient));
+		return factory.createClient(PokemonClient.class);
 	}
+
+	@HttpExchange("/pokemon")
+	interface PokemonClient {
+
+		@GetExchange
+		PokemonList pokemons();
+
+		@GetExchange("/{pokemonId}")
+		Pokemon pokemon(@PathVariable("pokemonId") Long id);
+
+	}
+
 }
 
