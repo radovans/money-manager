@@ -18,8 +18,9 @@ public class AccountController {
 	private final AccountRepository accountRepository;
 
 	@GetMapping
-	public Iterable<Account> getAccounts() {
+	public Iterable<Account> getAccounts() throws InterruptedException {
 		log.info("Finding all accounts.");
+		Thread.sleep(10000);
 		return accountRepository.findAll();
 	}
 }
