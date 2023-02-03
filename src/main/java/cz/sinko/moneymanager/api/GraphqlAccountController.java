@@ -35,7 +35,7 @@ class GraphqlAccountController {
 	@MutationMapping
 	Transaction addTransaction(@Argument TransactionInput transaction) {
 		var account = accountRepository.findById(transaction.getAccountId()).orElseThrow(() -> new IllegalArgumentException("account not found"));
-		var t = Transaction.builder().name(transaction.getName()).account(account).build();
+		var t = Transaction.builder().note(transaction.getNote()).account(account).build();
 		return transactionRepository.save(t);
 	}
 }

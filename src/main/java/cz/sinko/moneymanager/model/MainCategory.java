@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Account {
+public class MainCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
