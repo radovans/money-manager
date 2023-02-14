@@ -1,9 +1,7 @@
 package cz.sinko.moneymanager;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,9 +19,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvException;
 
 import cz.sinko.moneymanager.model.Account;
 import cz.sinko.moneymanager.model.Category;
@@ -65,7 +60,7 @@ public class MoneyManagerApplication {
 		setupAccounts(configurationJson.getAccounts());
 		setupMainCategories(configurationJson.getMainCategories());
 		setupCategories(configurationJson.getCategories());
-		List<String[]> transactions = openTransactions();
+		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
 		importTransactions(transactions);
 	}
 
@@ -99,14 +94,17 @@ public class MoneyManagerApplication {
 
 	private void importTransactions(List<String[]> transactions) {
 		List<String[]> failedRows = new ArrayList<>();
-		transactions.stream().skip(1).limit(50).forEach(transaction -> {
+		transactions.stream()
+				.skip(1)
+//				.limit(1000)
+				.forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();
 				transactionEntity.setDate(LocalDate.parse(transaction[0], DateTimeFormatter.ofPattern("d.M.yyyy")));
 				transactionEntity.setRecipient(transaction[1]);
 				transactionEntity.setNote(transaction[2]);
-				transactionEntity.setAmount(parseAmount(transaction[3]));
-				transactionEntity.setAmountInCzk(parseAmountWithCode(transaction[4]));
+				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
+				transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
 				transactionEntity.setCurrency(transaction[5]);
 				transactionEntity.setMainCategory(mainCategoryRepository.findByName(transaction[6]));
 				transactionEntity.setCategory(categoryRepository.findByName(transaction[7]));
@@ -123,38 +121,12 @@ public class MoneyManagerApplication {
 		}
 	}
 
-	private BigDecimal parseAmount(String amount) {
-		return new BigDecimal(amount.replace(",", ".").replace(" ", ""));
-	}
-
-	private BigDecimal parseAmountWithCode(String amountWithCode) {
-		try {
-			return new BigDecimal(amountWithCode.replace(",", ".").replace(" ", "").substring(0,
-					amountWithCode.length() - 4));
-		} catch (Exception e) {
-			//Happens in downloaded csv when google sheet was loading currencies
-			return BigDecimal.ZERO;
-		}
-	}
-
 	private static ConfigurationJson openConfiguration() {
 		File file = new File(CONFIGURATION_JSON);
 		try {
 			return GSON.fromJson(Files.readString(Path.of(file.getPath()), StandardCharsets.UTF_8), ConfigurationJson.class);
 		} catch (IOException e) {
 			throw new RuntimeException("Cannot open configuration file", e);
-		}
-	}
-
-	private List<String[]> openTransactions() {
-		File file = new File(IMPORT_CSV_FILE);
-		try {
-			CSVReader reader = new CSVReaderBuilder(new FileReader(file.getPath())).build();
-			return reader.readAll();
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot open configuration file", e);
-		} catch (CsvException e) {
-			throw new RuntimeException(e);
 		}
 	}
 
