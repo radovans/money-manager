@@ -7,5 +7,7 @@ public class AccountDto {
 
 	private Long id;
 	private String name;
+	private IncomeExpenseStatementDto incomeExpenseStatement;
+	private Integer numberOfTransactions;
 
 }

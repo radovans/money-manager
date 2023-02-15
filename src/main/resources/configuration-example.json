@@ -1,0 +1,73 @@
+{
+  "accounts":[
+    "Bank account",
+    "Savings account",
+    "Cash"
+  ],
+  "mainCategories":[
+    "Food",
+    "Shopping",
+    "Housing",
+    "Transport",
+    "Entertainment",
+    "Income"
+  ],
+  "categories":{
+    "Groceries":"Food",
+    "Restaurants":"Food",
+    "Clothes":"Shopping",
+    "Electronics":"Shopping",
+    "Mortgage":"Housing",
+    "Bills":"Housing",
+    "Public transport":"Transport",
+    "Car":"Transport",
+    "Entertainment":"Entertainment",
+    "Salary":"Income"
+  },
+  "rules":[
+    {
+      "key":"Shell",
+      "type":"NOTE",
+      "recipient":"Shell",
+      "note":"Fuel",
+      "mainCategory":"Car",
+      "category":"Transport",
+      "label":null
+    },
+    {
+      "key":"Best employer",
+      "type":"RECIPIENT",
+      "recipient":"Best employer",
+      "note":"Salary",
+      "mainCategory":"Income",
+      "category":"Salary"
+    }
+  ],
+  "plannedTransactions":[
+    {
+      "dayOfMonth":1,
+      "recipient":"Best employer",
+      "note":"Salary",
+      "amount":30000,
+      "currency":"CZK",
+      "mainCategory":"Income",
+      "category":"Salary",
+      "account":"Cash",
+      "label":null
+    }
+  ],
+  "recurrentTransactions":[
+	{
+      "firstPayment":"--01-01",
+	  "frequency":"MONTHLY",
+      "recipient":"Best employer",
+      "note":"Salary",
+      "amount":1000,
+      "currency":"EUR",
+      "mainCategory":"Income",
+      "category":"Salary",
+      "account":"Bank account",
+      "label":null
+    }
+  ]
+}

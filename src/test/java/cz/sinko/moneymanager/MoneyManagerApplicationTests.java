@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import cz.sinko.moneymanager.model.Account;
+import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.AccountRepository;
 import io.restassured.filter.log.LogDetail;
 
@@ -20,10 +20,10 @@ class MoneyManagerApplicationTests extends AbstractIntegrationTest {
 	@Test
 	void contextLoads() {
 		accountRepository.deleteAll();
-		Assertions.assertTrue(!accountRepository.findAll().iterator().hasNext(), () -> "there should be no data");
+		Assertions.assertTrue(!accountRepository.findAll().iterator().hasNext(), "there should be no data");
 		Account account = accountRepository.save(Account.builder().id(null).name("test").build());
 		Iterable<Account> all = accountRepository.findAll();
-		Assertions.assertTrue(all.iterator().hasNext(), () -> "there should be some data");
+		Assertions.assertTrue(all.iterator().hasNext(), "there should be some data");
 	}
 
 	@Test

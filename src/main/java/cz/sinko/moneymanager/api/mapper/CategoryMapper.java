@@ -5,8 +5,8 @@ import org.mapstruct.factory.Mappers;
 
 import cz.sinko.moneymanager.api.response.CategoryDto;
 import cz.sinko.moneymanager.api.response.MainCategoryDto;
-import cz.sinko.moneymanager.model.Category;
-import cz.sinko.moneymanager.model.MainCategory;
+import cz.sinko.moneymanager.repository.model.Category;
+import cz.sinko.moneymanager.repository.model.MainCategory;
 
 @Mapper()
 public interface CategoryMapper {

@@ -1,11 +1,14 @@
 package cz.sinko.moneymanager;
 
+import static cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto.CZK;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +23,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import cz.sinko.moneymanager.model.Account;
-import cz.sinko.moneymanager.model.Category;
-import cz.sinko.moneymanager.model.MainCategory;
-import cz.sinko.moneymanager.model.Transaction;
+import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
+import cz.sinko.moneymanager.api.response.RecurrentTransactionDto;
+import cz.sinko.moneymanager.api.response.RuleDto;
 import cz.sinko.moneymanager.repository.AccountRepository;
 import cz.sinko.moneymanager.repository.CategoryRepository;
 import cz.sinko.moneymanager.repository.MainCategoryRepository;
+import cz.sinko.moneymanager.repository.PlannedTransactionRepository;
+import cz.sinko.moneymanager.repository.RecurrentTransactionRepository;
+import cz.sinko.moneymanager.repository.RuleRepository;
 import cz.sinko.moneymanager.repository.TransactionRepository;
+import cz.sinko.moneymanager.repository.model.Account;
+import cz.sinko.moneymanager.repository.model.Category;
+import cz.sinko.moneymanager.repository.model.ExpenseType;
+import cz.sinko.moneymanager.repository.model.Frequency;
+import cz.sinko.moneymanager.repository.model.MainCategory;
+import cz.sinko.moneymanager.repository.model.PlannedTransaction;
+import cz.sinko.moneymanager.repository.model.RecurrentTransaction;
+import cz.sinko.moneymanager.repository.model.Rule;
+import cz.sinko.moneymanager.repository.model.Transaction;
+import cz.sinko.moneymanager.service.CsvUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -50,6 +65,15 @@ public class MoneyManagerApplication {
 	@Autowired
 	private TransactionRepository transactionRepository;
 
+	@Autowired
+	private PlannedTransactionRepository plannedTransactionRepository;
+
+	@Autowired
+	private RecurrentTransactionRepository recurrentTransactionRepository;
+
+	@Autowired
+	private RuleRepository ruleRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(MoneyManagerApplication.class, args);
 	}
@@ -60,8 +84,68 @@ public class MoneyManagerApplication {
 		setupAccounts(configurationJson.getAccounts());
 		setupMainCategories(configurationJson.getMainCategories());
 		setupCategories(configurationJson.getCategories());
+		setupRules(configurationJson.getRules());
+		setupPlannedTransactions(configurationJson.getPlannedTransactions());
+		setupRecurrentTransactions(configurationJson.getRecurrentTransactions());
 		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
 		importTransactions(transactions);
+	}
+
+	private void setupPlannedTransactions(List<PlannedTransactionDto> plannedTransactions) {
+		plannedTransactions.forEach(plannedTransaction -> {
+			PlannedTransaction plannedTransactionEntity = new PlannedTransaction();
+			plannedTransactionEntity.setDayOfMonth(plannedTransaction.getDayOfMonth());
+			plannedTransactionEntity.setRecipient(plannedTransaction.getRecipient());
+			plannedTransactionEntity.setNote(plannedTransaction.getNote());
+			plannedTransactionEntity.setAmount(plannedTransaction.getAmount());
+			plannedTransactionEntity.setCurrency(plannedTransaction.getCurrency());
+			plannedTransactionEntity.setMainCategory(mainCategoryRepository.findByName(plannedTransaction.getMainCategory()));
+			plannedTransactionEntity.setCategory(categoryRepository.findByName(plannedTransaction.getCategory()));
+			plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()));
+			plannedTransactionEntity.setLabel(plannedTransaction.getLabel());
+			plannedTransactionEntity.setExpenseType(plannedTransaction.getExpenseType() != null ?
+					ExpenseType.valueOf(plannedTransaction.getExpenseType()) :
+					null);
+			plannedTransactionRepository.save(plannedTransactionEntity);
+			log.info("Planned transaction saved '{}'", plannedTransactionEntity);
+		});
+	}
+
+	private void setupRecurrentTransactions(List<RecurrentTransactionDto> recurrentTransactions) {
+		recurrentTransactions.forEach(recurrentTransaction -> {
+			RecurrentTransaction recurrentTransactionEntity = new RecurrentTransaction();
+			recurrentTransactionEntity.setFirstPayment(MonthDay.parse(recurrentTransaction.getFirstPayment()));
+			recurrentTransactionEntity.setFrequency(Frequency.valueOf(recurrentTransaction.getFrequency()));
+			recurrentTransactionEntity.setRecipient(recurrentTransaction.getRecipient());
+			recurrentTransactionEntity.setNote(recurrentTransaction.getNote());
+			recurrentTransactionEntity.setAmount(recurrentTransaction.getAmount());
+			recurrentTransactionEntity.setAmountInCzk(recurrentTransaction.getAmount());
+			recurrentTransactionEntity.setCurrency(recurrentTransaction.getCurrency());
+			recurrentTransactionEntity.setMainCategory(mainCategoryRepository.findByName(recurrentTransaction.getMainCategory()));
+			recurrentTransactionEntity.setCategory(categoryRepository.findByName(recurrentTransaction.getCategory()));
+			recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()));
+			recurrentTransactionEntity.setLabel(recurrentTransaction.getLabel());
+			recurrentTransactionEntity.setExpenseType(recurrentTransaction.getExpenseType() != null ?
+					ExpenseType.valueOf(recurrentTransaction.getExpenseType()) :
+					null);
+			recurrentTransactionRepository.save(recurrentTransactionEntity);
+			log.info("Recurrent transaction saved '{}'", recurrentTransactionEntity);
+		});
+	}
+
+	private void setupRules(List<RuleDto> rules) {
+		rules.forEach(rule -> {
+			Rule ruleEntity = new Rule();
+			ruleEntity.setKey(rule.getKey());
+			ruleEntity.setType(rule.getType());
+			ruleEntity.setRecipient(rule.getRecipient());
+			ruleEntity.setNote(rule.getNote());
+			ruleEntity.setMainCategory(mainCategoryRepository.findByName(rule.getMainCategory()));
+			ruleEntity.setCategory(categoryRepository.findByName(rule.getCategory()));
+			ruleEntity.setLabel(rule.getLabel());
+			ruleRepository.save(ruleEntity);
+			log.info("Rule saved '{}'", rule);
+		});
 	}
 
 	public void setupAccounts(List<String> accounts) {
@@ -96,26 +180,26 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-//				.limit(1000)
+//				.limit(1)
 				.forEach(transaction -> {
-			try {
-				Transaction transactionEntity = new Transaction();
-				transactionEntity.setDate(LocalDate.parse(transaction[0], DateTimeFormatter.ofPattern("d.M.yyyy")));
-				transactionEntity.setRecipient(transaction[1]);
-				transactionEntity.setNote(transaction[2]);
-				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
-				transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
-				transactionEntity.setCurrency(transaction[5]);
-				transactionEntity.setMainCategory(mainCategoryRepository.findByName(transaction[6]));
-				transactionEntity.setCategory(categoryRepository.findByName(transaction[7]));
-				transactionEntity.setAccount(accountRepository.findByName(transaction[8]));
-				transactionEntity.setLabel(transaction[9]);
-				transactionRepository.save(transactionEntity);
-				log.info("Transaction saved '{}'", transactionEntity);
-			} catch (Exception e) {
-				failedRows.add(transaction);
-			}
-		});
+					try {
+						Transaction transactionEntity = new Transaction();
+						transactionEntity.setDate(LocalDate.parse(transaction[0], DateTimeFormatter.ofPattern("d.M.yyyy")));
+						transactionEntity.setRecipient(transaction[1]);
+						transactionEntity.setNote(transaction[2]);
+						transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
+						transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
+						transactionEntity.setCurrency(transaction[5].isBlank() ? CZK : transaction[5]);
+						transactionEntity.setMainCategory(mainCategoryRepository.findByName(transaction[6]));
+						transactionEntity.setCategory(categoryRepository.findByName(transaction[7]));
+						transactionEntity.setAccount(accountRepository.findByName(transaction[8]));
+						transactionEntity.setLabel(transaction[9]);
+						transactionRepository.save(transactionEntity);
+						log.info("Transaction saved '{}'", transactionEntity);
+					} catch (Exception e) {
+						failedRows.add(transaction);
+					}
+				});
 		if (!failedRows.isEmpty()) {
 			failedRows.forEach(row -> log.error("Failed to save transaction '{}'", row));
 		}
