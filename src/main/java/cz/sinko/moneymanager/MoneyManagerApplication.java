@@ -23,12 +23,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
 import cz.sinko.moneymanager.api.response.RecurrentTransactionDto;
 import cz.sinko.moneymanager.api.response.RuleDto;
 import cz.sinko.moneymanager.repository.AccountRepository;
-import cz.sinko.moneymanager.repository.CategoryRepository;
-import cz.sinko.moneymanager.repository.MainCategoryRepository;
 import cz.sinko.moneymanager.repository.PlannedTransactionRepository;
 import cz.sinko.moneymanager.repository.RecurrentTransactionRepository;
 import cz.sinko.moneymanager.repository.RuleRepository;
@@ -42,7 +41,9 @@ import cz.sinko.moneymanager.repository.model.PlannedTransaction;
 import cz.sinko.moneymanager.repository.model.RecurrentTransaction;
 import cz.sinko.moneymanager.repository.model.Rule;
 import cz.sinko.moneymanager.repository.model.Transaction;
+import cz.sinko.moneymanager.service.CategoryService;
 import cz.sinko.moneymanager.service.CsvUtil;
+import cz.sinko.moneymanager.service.MainCategoryService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -57,10 +58,10 @@ public class MoneyManagerApplication {
 	private AccountRepository accountRepository;
 
 	@Autowired
-	private MainCategoryRepository mainCategoryRepository;
+	private MainCategoryService mainCategoryService;
 
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryService categoryService;
 
 	@Autowired
 	private TransactionRepository transactionRepository;
@@ -93,58 +94,77 @@ public class MoneyManagerApplication {
 
 	private void setupPlannedTransactions(List<PlannedTransactionDto> plannedTransactions) {
 		plannedTransactions.forEach(plannedTransaction -> {
-			PlannedTransaction plannedTransactionEntity = new PlannedTransaction();
-			plannedTransactionEntity.setDayOfMonth(plannedTransaction.getDayOfMonth());
-			plannedTransactionEntity.setRecipient(plannedTransaction.getRecipient());
-			plannedTransactionEntity.setNote(plannedTransaction.getNote());
-			plannedTransactionEntity.setAmount(plannedTransaction.getAmount());
-			plannedTransactionEntity.setCurrency(plannedTransaction.getCurrency());
-			plannedTransactionEntity.setMainCategory(mainCategoryRepository.findByName(plannedTransaction.getMainCategory()));
-			plannedTransactionEntity.setCategory(categoryRepository.findByName(plannedTransaction.getCategory()));
-			plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()));
-			plannedTransactionEntity.setLabel(plannedTransaction.getLabel());
-			plannedTransactionEntity.setExpenseType(plannedTransaction.getExpenseType() != null ?
-					ExpenseType.valueOf(plannedTransaction.getExpenseType()) :
-					null);
-			plannedTransactionRepository.save(plannedTransactionEntity);
-			log.info("Planned transaction saved '{}'", plannedTransactionEntity);
+			try {
+				PlannedTransaction plannedTransactionEntity = new PlannedTransaction();
+				plannedTransactionEntity.setDayOfMonth(plannedTransaction.getDayOfMonth());
+				plannedTransactionEntity.setRecipient(plannedTransaction.getRecipient());
+				plannedTransactionEntity.setNote(plannedTransaction.getNote());
+				plannedTransactionEntity.setAmount(plannedTransaction.getAmount());
+				plannedTransactionEntity.setCurrency(plannedTransaction.getCurrency());
+				plannedTransactionEntity.setMainCategory(mainCategoryService.findByName(plannedTransaction.getMainCategory()));
+				plannedTransactionEntity.setCategory(categoryService.findByName(plannedTransaction.getCategory()));
+				plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()));
+				plannedTransactionEntity.setLabel(plannedTransaction.getLabel());
+				plannedTransactionEntity.setExpenseType(plannedTransaction.getExpenseType() != null ?
+						ExpenseType.valueOf(plannedTransaction.getExpenseType()) :
+						null);
+				plannedTransactionRepository.save(plannedTransactionEntity);
+				log.info("Planned transaction saved '{}'", plannedTransactionEntity);
+			} catch (ResourceNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		});
 	}
 
 	private void setupRecurrentTransactions(List<RecurrentTransactionDto> recurrentTransactions) {
 		recurrentTransactions.forEach(recurrentTransaction -> {
-			RecurrentTransaction recurrentTransactionEntity = new RecurrentTransaction();
-			recurrentTransactionEntity.setFirstPayment(MonthDay.parse(recurrentTransaction.getFirstPayment()));
-			recurrentTransactionEntity.setFrequency(Frequency.valueOf(recurrentTransaction.getFrequency()));
-			recurrentTransactionEntity.setRecipient(recurrentTransaction.getRecipient());
-			recurrentTransactionEntity.setNote(recurrentTransaction.getNote());
-			recurrentTransactionEntity.setAmount(recurrentTransaction.getAmount());
-			recurrentTransactionEntity.setAmountInCzk(recurrentTransaction.getAmount());
-			recurrentTransactionEntity.setCurrency(recurrentTransaction.getCurrency());
-			recurrentTransactionEntity.setMainCategory(mainCategoryRepository.findByName(recurrentTransaction.getMainCategory()));
-			recurrentTransactionEntity.setCategory(categoryRepository.findByName(recurrentTransaction.getCategory()));
-			recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()));
-			recurrentTransactionEntity.setLabel(recurrentTransaction.getLabel());
-			recurrentTransactionEntity.setExpenseType(recurrentTransaction.getExpenseType() != null ?
-					ExpenseType.valueOf(recurrentTransaction.getExpenseType()) :
-					null);
-			recurrentTransactionRepository.save(recurrentTransactionEntity);
-			log.info("Recurrent transaction saved '{}'", recurrentTransactionEntity);
+			try {
+				RecurrentTransaction recurrentTransactionEntity = new RecurrentTransaction();
+				recurrentTransactionEntity.setFirstPayment(MonthDay.parse(recurrentTransaction.getFirstPayment()));
+				recurrentTransactionEntity.setFrequency(Frequency.valueOf(recurrentTransaction.getFrequency()));
+				recurrentTransactionEntity.setRecipient(recurrentTransaction.getRecipient());
+				recurrentTransactionEntity.setNote(recurrentTransaction.getNote());
+				recurrentTransactionEntity.setAmount(recurrentTransaction.getAmount());
+				recurrentTransactionEntity.setAmountInCzk(recurrentTransaction.getAmount());
+				recurrentTransactionEntity.setCurrency(recurrentTransaction.getCurrency());
+				recurrentTransactionEntity.setMainCategory(mainCategoryService.findByName(recurrentTransaction.getMainCategory()));
+				recurrentTransactionEntity.setCategory(categoryService.findByName(recurrentTransaction.getCategory()));
+				recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()));
+				recurrentTransactionEntity.setLabel(recurrentTransaction.getLabel());
+				recurrentTransactionEntity.setExpenseType(recurrentTransaction.getExpenseType() != null ?
+						ExpenseType.valueOf(recurrentTransaction.getExpenseType()) :
+						null);
+				recurrentTransactionRepository.save(recurrentTransactionEntity);
+				log.info("Recurrent transaction saved '{}'", recurrentTransactionEntity);
+			} catch (ResourceNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		});
 	}
 
 	private void setupRules(List<RuleDto> rules) {
 		rules.forEach(rule -> {
-			Rule ruleEntity = new Rule();
-			ruleEntity.setKey(rule.getKey());
-			ruleEntity.setType(rule.getType());
-			ruleEntity.setRecipient(rule.getRecipient());
-			ruleEntity.setNote(rule.getNote());
-			ruleEntity.setMainCategory(mainCategoryRepository.findByName(rule.getMainCategory()));
-			ruleEntity.setCategory(categoryRepository.findByName(rule.getCategory()));
-			ruleEntity.setLabel(rule.getLabel());
-			ruleRepository.save(ruleEntity);
-			log.info("Rule saved '{}'", rule);
+			try {
+				Rule ruleEntity = new Rule();
+				ruleEntity.setKey(rule.getKey());
+				ruleEntity.setType(rule.getType());
+				ruleEntity.setSkipTransaction(rule.isSkipTransaction());
+				ruleEntity.setRecipient(rule.getRecipient());
+				ruleEntity.setNote(rule.getNote());
+				if (!rule.isSkipTransaction()) {
+					if (rule.getMainCategory() != null) {
+						ruleEntity.setMainCategory(mainCategoryService.findByName(rule.getMainCategory()));
+					}
+					if (rule.getCategory() != null) {
+						ruleEntity.setCategory(categoryService.findByName(rule.getCategory()));
+					}
+				}
+				ruleEntity.setLabel(rule.getLabel());
+				ruleRepository.save(ruleEntity);
+				log.info("Rule saved '{}'", rule);
+			} catch (ResourceNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		});
 	}
 
@@ -161,18 +181,22 @@ public class MoneyManagerApplication {
 		mainCategories.forEach(mainCategory -> {
 			MainCategory mainCategoryEntity = new MainCategory();
 			mainCategoryEntity.setName(mainCategory);
-			mainCategoryRepository.save(mainCategoryEntity);
+			mainCategoryService.save(mainCategoryEntity);
 			log.info("Main cateory saved '{}'", mainCategoryEntity);
 		});
 	}
 
 	public void setupCategories(Map<String, String> categories) {
 		categories.forEach((category, mainCategory) -> {
-			Category categoryEntity = new Category();
-			categoryEntity.setName(category);
-			categoryEntity.setMainCategory(mainCategoryRepository.findByName(mainCategory));
-			categoryRepository.save(categoryEntity);
-			log.info("Category saved '{}'", categoryEntity);
+			try {
+				Category categoryEntity = new Category();
+				categoryEntity.setName(category);
+				categoryEntity.setMainCategory(mainCategoryService.findByName(mainCategory));
+				categoryService.save(categoryEntity);
+				log.info("Category saved '{}'", categoryEntity);
+			} catch (ResourceNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		});
 	}
 
@@ -190,8 +214,8 @@ public class MoneyManagerApplication {
 						transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
 						transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
 						transactionEntity.setCurrency(transaction[5].isBlank() ? CZK : transaction[5]);
-						transactionEntity.setMainCategory(mainCategoryRepository.findByName(transaction[6]));
-						transactionEntity.setCategory(categoryRepository.findByName(transaction[7]));
+						transactionEntity.setMainCategory(mainCategoryService.findByName(transaction[6]));
+						transactionEntity.setCategory(categoryService.findByName(transaction[7]));
 						transactionEntity.setAccount(accountRepository.findByName(transaction[8]));
 						transactionEntity.setLabel(transaction[9]);
 						transactionRepository.save(transactionEntity);

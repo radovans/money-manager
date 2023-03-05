@@ -1,5 +1,7 @@
 package cz.sinko.moneymanager.api.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -17,6 +19,10 @@ public interface CategoryMapper {
 
 	MainCategoryDto mapMainCategory(MainCategory source);
 
+	List<MainCategoryDto> mapMainCategory(List<MainCategory> source);
+
 	CategoryDto mapCategory(Category source);
+
+	List<CategoryDto> mapCategory(List<Category> source);
 
 }

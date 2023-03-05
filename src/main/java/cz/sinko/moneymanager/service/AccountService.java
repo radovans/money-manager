@@ -26,7 +26,7 @@ public class AccountService {
 	public Account findAccount(Long accountId) throws ResourceNotFoundException {
 		Optional<Account> account = accountRepository.findById(accountId);
 		if (account.isEmpty()) {
-			throw ResourceNotFoundException.createWith("Account", accountId);
+			throw ResourceNotFoundException.createWith("Account", " with id '" + accountId + "' was not found");
 		}
 		return account.get();
 	}

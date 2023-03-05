@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.RequestValidationException;
+import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
 import cz.sinko.moneymanager.api.response.AccountTransactionDto;
 import cz.sinko.moneymanager.api.response.AccountTransactionsDto;
@@ -44,17 +45,20 @@ public class TransactionController {
 			@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
 			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
-			@RequestParam(required = false) String category) throws RequestValidationException {
+			@RequestParam(required = false) String category)
+			throws RequestValidationException, ResourceNotFoundException {
 		String parsedSort = parseSort(sort);
 		String parsedDirection = parseDirection(sort);
 		validateRequest(parsedSort, parsedDirection, page, size, from, to);
 		log.info("Finding all transactions with sort: '{}', direction: '{}', page: '{}'. size: '{}', search: '{}', from: '{}', to: '{}'.", parsedSort, parsedDirection, page, size, search, from, to);
-		Page<Transaction> transactions = transactionService.findTransactions(parsedSort, Sort.Direction.fromString(parsedDirection), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+		Page<Transaction> transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 		List<AccountTransactionDto> accountTransactionDtos = TransactionMapper.t().map(transactions);
 		AccountTransactionsDto response = new AccountTransactionsDto();
 		response.setTransactions(accountTransactionDtos);
 		response.setTotal(transactions.getTotalElements());
-		response.setTotalAmount(transactions.getTotalElements() > 0 ? transactions.getContent().stream().map(Transaction::getAmountInCzk).reduce(BigDecimal::add).get() : BigDecimal.ZERO);
+		response.setTotalAmount(transactions.getTotalElements() > 0 ?
+				transactions.getContent().stream().map(Transaction::getAmountInCzk).reduce(BigDecimal::add).get() :
+				BigDecimal.ZERO);
 		return ResponseEntity.ok().headers(createHeaders(transactions)).body(response);
 	}
 
@@ -78,7 +82,8 @@ public class TransactionController {
 		}
 	}
 
-	private void validateRequest(String sort, String direction, String page, String size, String from, String to) throws RequestValidationException {
+	private void validateRequest(String sort, String direction, String page, String size, String from, String to)
+			throws RequestValidationException {
 		List<ObjectError> errors = new ArrayList<>();
 		ValidationUtils.validateEnumValue(sort, errors, SortTransactionFields.class);
 		ValidationUtils.validateEnumValue(direction, errors, Sort.Direction.class);

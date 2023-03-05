@@ -22,4 +22,7 @@ public interface RuleMapper {
 	@Mapping(target = "mainCategory", source = "mainCategory.name")
 	RuleDto map(Rule source);
 
+	@Mapping(target = "category", ignore = true)
+	@Mapping(target = "mainCategory", ignore = true)
+	Rule map(RuleDto source);
 }

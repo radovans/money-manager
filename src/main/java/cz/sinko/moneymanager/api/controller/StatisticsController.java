@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.RequestValidationException;
+import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.response.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto;
 import cz.sinko.moneymanager.api.response.MonthStatisticDto;
@@ -63,7 +64,8 @@ public class StatisticsController {
 	public SpendingCategoriesDto getSpendingCategoriesStatistics(
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
 			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
-			@RequestParam(required = false) String category) throws RequestValidationException {
+			@RequestParam(required = false) String category)
+			throws RequestValidationException, ResourceNotFoundException {
 		validateRequest(from, to);
 		if (category == null) {
 			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
@@ -104,7 +106,8 @@ public class StatisticsController {
 	public Map<String, List<MonthStatisticDto>> getYearMonthStatisticsByYear(
 			@RequestParam(defaultValue = "2020-01") String from,
 			@RequestParam(defaultValue = "2023-12") String to,
-			@RequestParam(defaultValue = "false") boolean salaryOnly) throws RequestValidationException {
+			@RequestParam(defaultValue = "false") boolean salaryOnly)
+			throws RequestValidationException, ResourceNotFoundException {
 		validateYearMonthRequest(from, to);
 		List<Transaction> transactions;
 		if (salaryOnly) {

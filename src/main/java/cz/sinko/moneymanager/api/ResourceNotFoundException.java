@@ -7,19 +7,19 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ResourceNotFoundException extends Exception {
 
 	private final String resourceName;
-	private final Long resourceId;
+	private final String message;
 
-	public static ResourceNotFoundException createWith(String resourceName, Long resourceId) {
-		return new ResourceNotFoundException(resourceName, resourceId);
+	public static ResourceNotFoundException createWith(String resourceName, String message) {
+		return new ResourceNotFoundException(resourceName, message);
 	}
 
-	private ResourceNotFoundException(String resourceName, Long resourceId) {
+	private ResourceNotFoundException(String resourceName, String message) {
 		this.resourceName = resourceName;
-		this.resourceId = resourceId;
+		this.message = message;
 	}
 
 	@Override
 	public String getMessage() {
-		return resourceName + " with id '" + resourceId + "' was not found";
+		return resourceName + " " + message;
 	}
 }

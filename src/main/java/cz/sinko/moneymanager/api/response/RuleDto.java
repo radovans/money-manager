@@ -6,8 +6,10 @@ import lombok.Data;
 @Data
 public class RuleDto {
 
-	private String key;
+	private Long id;
 	private RuleType type;
+	private String key;
+	private boolean skipTransaction;
 	private String recipient;
 	private String note;
 	private String mainCategory;

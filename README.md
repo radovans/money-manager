@@ -9,27 +9,62 @@ Multipurpose application for managing my money.
 Run docker container with postgres database:
 docker run -d -p 5432:5432 --name moneymng --restart always -e POSTGRES_USER=moneymng -e POSTGRES_PASSWORD=moneymng -e POSTGRES_DB=moneymng -v moneymng_postgres_data:/var/lib/postgresql/data postgres
 
-TODO UI backlog:
-DONE - add boxes around all componenents, not only in dashboard
+TODO backlog:
+DASHBOARD:
+DONE - create dashboard site
+
+TRANSACTIONS:
+DONE - create transactions site
 DONE - move filters to flex with header
 - add aggregate sum to transaction list in datagrid transactions.jsx
 - create button group https://mui.com/material-ui/react-button-group/ for Clear, All, This year, Last year
-DONE - Categories pie chart
+- create input form for creating new transactions
+
+RULES:
+DONE - create rules site
+DONE - input form in rules page for manual input of rules
+- download button in rules page which will download rules as json
+FE DONE - add possiblity to skip transaction
+
+IMPORT:
+DONE - create import site
+- upload button in import page which will accept csv file with transactions
+- response from parsed transactions should return list of successfully parsed transactions and list of errors
+- upload button in import page which will accept json configuration
+- download button in import page which will download json configuration
+
+BALANCE:
+DONE - create balance site
+
+INCOMES:
+DONE - create incomes site
+DONE - create line chart in /incomes for salary only with switch
+
+EXPENSES:
+DONE - create expenses site
+- create bar chart for spending by expense nature (must, need, want)
+
+CATEGORIES:
+DONE - create categories site
+DONE - categories pie chart
 DONE  - add total sum of visualized data from pie chart next to the header
 DONE  - next to the pie chart add table with 10 most expensive transactions from actual view (from all transactions/from selected main category)
 DONE  - create new pie chart for spending by category (input is main category)
-DONE  - add on click action from main category pie chart to category pie chart, so you can see detail of the main category 
-DONE - add loading indicator to all charts if data are not loaded yet
+DONE  - add on click action from main category pie chart to category pie chart, so you can see detail of the main category
 DONE - add fixed height of the bars in bar charts
-- create upload button in import page which will accept csv file
-- create input form in import page for manual input of transactions
-- create line chart in /incomes for salary only with switch
-- create bar chart for spending by expense nature (must, need, want)
+
+CUMULATIVE BALANCE:
+DONE - create cumulative balance site
+
+COMMON:
+DONE - add boxes around all componenents, not only in dashboard
+DONE - add loading indicator to all charts if data are not loaded yet
+- create dropdown menu for accounts, categories, rules, featured transactions, recurrent transactions, import/export
+- import transactions should use stepper https://mui.com/material-ui/react-stepper/ , first step is upload csv file, second step is validate data, show errors and update data, third step is save data
 - create table for cash flow
 - create table for assets and liabilities
 - create line chart for predicting future balance, income and expenses
-
-TODO Backend backlog:
+- add icons to categories
 - add expense type by nature (must, need, want)
 - add transaction type (Direct debit, Standing order, Regular payment, Subscription, One-time payment)
 - create docker-compose with database, backend and frontend
