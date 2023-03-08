@@ -28,10 +28,14 @@ public abstract class AccountMapper {
 		AccountDto accountDto = new AccountDto();
 		accountDto.setId(source.getId());
 		accountDto.setName(source.getName());
-		accountDto.setNumberOfTransactions(source.getNumberOfTransactions());
-		IncomeExpenseStatementDto incomeExpenseStatement = new IncomeExpenseStatementDto(
-				source.getBalance(), source.getIncome(), source.getExpense());
-		accountDto.setIncomeExpenseStatement(incomeExpenseStatement);
+		if (source.getNumberOfTransactions() != null) {
+			accountDto.setNumberOfTransactions(source.getNumberOfTransactions());
+		}
+		if (source.getBalance() != null && source.getIncome() != null && source.getExpense() != null) {
+			IncomeExpenseStatementDto incomeExpenseStatement = new IncomeExpenseStatementDto(
+					source.getBalance(), source.getIncome(), source.getExpense());
+			accountDto.setIncomeExpenseStatement(incomeExpenseStatement);
+		}
 		return accountDto;
 	}
 
@@ -44,6 +48,12 @@ public abstract class AccountMapper {
 				source.getBalance(), source.getIncome(), source.getExpense());
 		accountWithTransactionsDto.setIncomeExpenseStatement(incomeExpenseStatement);
 		return accountWithTransactionsDto;
+	}
+
+	public Account map(AccountDto source) {
+		Account account = new Account();
+		account.setName(source.getName());
+		return account;
 	}
 
 }

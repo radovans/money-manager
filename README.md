@@ -16,22 +16,22 @@ DONE - create dashboard site
 TRANSACTIONS:
 DONE - create transactions site
 DONE - move filters to flex with header
-- add aggregate sum to transaction list in datagrid transactions.jsx
-- create button group https://mui.com/material-ui/react-button-group/ for Clear, All, This year, Last year
-- create input form for creating new transactions
+DONE - add aggregate sum to transaction list in datagrid transactions.jsx
+DONE - create button group https://mui.com/material-ui/react-button-group/ for Clear, All, This year, Last year
+DONE - create input form for creating new transactions
 
 RULES:
 DONE - create rules site
 DONE - input form in rules page for manual input of rules
-- download button in rules page which will download rules as json
-FE DONE - add possiblity to skip transaction
+DONE - download button in rules page which will download rules as json
+DONE - add possiblity to skip transaction in rules
 
 IMPORT:
 DONE - create import site
 - upload button in import page which will accept csv file with transactions
 - response from parsed transactions should return list of successfully parsed transactions and list of errors
 - upload button in import page which will accept json configuration
-- download button in import page which will download json configuration
+DONE - download button in import page which will download json configuration
 
 BALANCE:
 DONE - create balance site
@@ -59,7 +59,7 @@ DONE - create cumulative balance site
 COMMON:
 DONE - add boxes around all componenents, not only in dashboard
 DONE - add loading indicator to all charts if data are not loaded yet
-- create dropdown menu for accounts, categories, rules, featured transactions, recurrent transactions, import/export
+DONE - create dropdown menu for accounts, categories, rules, featured transactions, recurrent transactions, import/export
 - import transactions should use stepper https://mui.com/material-ui/react-stepper/ , first step is upload csv file, second step is validate data, show errors and update data, third step is save data
 - create table for cash flow
 - create table for assets and liabilities
@@ -69,6 +69,8 @@ DONE - add loading indicator to all charts if data are not loaded yet
 - add transaction type (Direct debit, Standing order, Regular payment, Subscription, One-time payment)
 - create docker-compose with database, backend and frontend
 DONE - search should ignore input case
+
+FIX - http://localhost:8088/categories?mainCategory=null
 
 Líniový graf - Kumulovaný vývoj zostatku - vs minulé obdobie v percentách
 Prijem a vydaje opacnymi smermi  v jednom grafe. Prijmy hore vydaje dole

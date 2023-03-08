@@ -41,7 +41,7 @@ public class TransactionController {
 	public ResponseEntity<?> getTransactions(
 			@RequestParam(required = false) String sort,
 			@RequestParam(defaultValue = "0") String page,
-			@RequestParam(defaultValue = Integer.MAX_VALUE + "") String size,
+			@RequestParam(defaultValue = Integer.MIN_VALUE + "") String size,
 			@RequestParam(required = false) String search,
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
 			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
@@ -51,7 +51,12 @@ public class TransactionController {
 		String parsedDirection = parseDirection(sort);
 		validateRequest(parsedSort, parsedDirection, page, size, from, to);
 		log.info("Finding all transactions with sort: '{}', direction: '{}', page: '{}'. size: '{}', search: '{}', from: '{}', to: '{}'.", parsedSort, parsedDirection, page, size, search, from, to);
-		Page<Transaction> transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+		Page<Transaction> transactions;
+		if (Integer.parseInt(size) <= 0) {
+			transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.MAX_VALUE, search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+		} else {
+			transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+		}
 		List<AccountTransactionDto> accountTransactionDtos = TransactionMapper.t().map(transactions);
 		AccountTransactionsDto response = new AccountTransactionsDto();
 		response.setTransactions(accountTransactionDtos);
@@ -88,7 +93,6 @@ public class TransactionController {
 		ValidationUtils.validateEnumValue(sort, errors, SortTransactionFields.class);
 		ValidationUtils.validateEnumValue(direction, errors, Sort.Direction.class);
 		ValidationUtils.validateIntegerGreaterThan(page, 0, errors, "page");
-		ValidationUtils.validateIntegerGreaterThan(size, 0, errors, "size");
 		ValidationUtils.validateOffsetDateTimeFormat(from, errors, "from");
 		ValidationUtils.validateOffsetDateTimeFormat(to, errors, "to");
 		ValidationUtils.checkErrors(errors);
