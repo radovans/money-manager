@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class MainCategoryStatisticsDto extends MainCategoryDto {
+public class CategoryStatisticsDto extends CategoryDto {
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal amount;

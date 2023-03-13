@@ -38,8 +38,8 @@ public class AirbankImportService implements ImportService {
 				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[5]));
 				transactionEntity.setAmountInCzk(null);
 				transactionEntity.setCurrency(null);
-				transactionEntity.setMainCategory(null);
 				transactionEntity.setCategory(null);
+				transactionEntity.setSubcategory(null);
 				transactionEntity.setAccount(airBank);
 				transactionEntity.setLabel(null);
 				transactions.add(transactionEntity);

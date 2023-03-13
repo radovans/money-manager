@@ -25,16 +25,16 @@ public interface TransactionMapper {
 
 	@Named(value = "map")
 	@Mapping(target = "account", source = "account.name")
+	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
-	@Mapping(target = "mainCategory", source = "mainCategory.name")
 	AccountTransactionDto map(Transaction source);
 
 	@IterableMapping(qualifiedByName = "mapTransactionWithoutAccount")
 	List<TransactionDto> mapTransactionWithoutAccount(List<Transaction> source);
 
 	@Named(value = "mapTransactionWithoutAccount")
+	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
-	@Mapping(target = "mainCategory", source = "mainCategory.name")
 	TransactionDto mapTransactionWithoutAccount(Transaction source);
 
 }

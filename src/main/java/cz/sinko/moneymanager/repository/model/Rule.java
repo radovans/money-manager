@@ -44,27 +44,27 @@ public class Rule {
 	private String note;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "main_category_id")
-	private MainCategory mainCategory;
-
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "subcategory_id")
+	private Subcategory subcategory;
+
 	private String label;
 
-	public Rule(String recipient, String note, MainCategory mainCategory, Category category) {
+	public Rule(String recipient, String note, Category category, Subcategory subcategory) {
 		this.recipient = recipient;
 		this.note = note;
-		this.mainCategory = mainCategory;
 		this.category = category;
+		this.subcategory = subcategory;
 	}
 
-	public Rule(String recipient, String note, MainCategory mainCategory, Category category, String label) {
+	public Rule(String recipient, String note, Category category, Subcategory subcategory, String label) {
 		this.recipient = recipient;
 		this.note = note;
-		this.mainCategory = mainCategory;
 		this.category = category;
+		this.subcategory = subcategory;
 		this.label = label;
 	}
 }

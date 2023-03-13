@@ -20,7 +20,7 @@ public class TransactionDto {
 	private BigDecimal amountInCzk;
 	private String formattedAmountInCzk;
 	private String currency;
-	private String mainCategory;
+	private String subcategory;
 	private String category;
 	private String label;
 

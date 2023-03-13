@@ -20,8 +20,8 @@ public interface PlannedTransactionMapper {
 	List<PlannedTransactionDto> map(List<PlannedTransaction> source);
 
 	@Mapping(target = "account", source = "account.name")
+	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
-	@Mapping(target = "mainCategory", source = "mainCategory.name")
 	PlannedTransactionDto map(PlannedTransaction source);
 
 	List<Transaction> mapToTransaction(List<PlannedTransaction> source);

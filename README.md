@@ -48,9 +48,9 @@ CATEGORIES:
 DONE - create categories site
 DONE - categories pie chart
 DONE  - add total sum of visualized data from pie chart next to the header
-DONE  - next to the pie chart add table with 10 most expensive transactions from actual view (from all transactions/from selected main category)
-DONE  - create new pie chart for spending by category (input is main category)
-DONE  - add on click action from main category pie chart to category pie chart, so you can see detail of the main category
+DONE  - next to the pie chart add table with 10 most expensive transactions from actual view (from all transactions/from selected main subcategory)
+DONE  - create new pie chart for spending by subcategory (input is main subcategory)
+DONE  - add on click action from main subcategory pie chart to subcategory pie chart, so you can see detail of the main subcategory
 DONE - add fixed height of the bars in bar charts
 
 CUMULATIVE BALANCE:
@@ -70,7 +70,7 @@ DONE - create dropdown menu for accounts, categories, rules, featured transactio
 - create docker-compose with database, backend and frontend
 DONE - search should ignore input case
 
-FIX - http://localhost:8088/categories?mainCategory=null
+FIX - http://localhost:8088/categories?category=null
 
 Líniový graf - Kumulovaný vývoj zostatku - vs minulé obdobie v percentách
 Prijem a vydaje opacnymi smermi  v jednom grafe. Prijmy hore vydaje dole

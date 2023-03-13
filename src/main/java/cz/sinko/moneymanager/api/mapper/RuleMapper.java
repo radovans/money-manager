@@ -18,11 +18,11 @@ public interface RuleMapper {
 
 	List<RuleDto> map(List<Rule> source);
 
+	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
-	@Mapping(target = "mainCategory", source = "mainCategory.name")
 	RuleDto map(Rule source);
 
+	@Mapping(target = "subcategory", ignore = true)
 	@Mapping(target = "category", ignore = true)
-	@Mapping(target = "mainCategory", ignore = true)
 	Rule map(RuleDto source);
 }

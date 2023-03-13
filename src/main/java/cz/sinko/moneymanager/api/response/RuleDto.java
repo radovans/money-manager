@@ -12,7 +12,7 @@ public class RuleDto {
 	private boolean skipTransaction;
 	private String recipient;
 	private String note;
-	private String mainCategory;
+	private String subcategory;
 	private String category;
 	private String label;
 

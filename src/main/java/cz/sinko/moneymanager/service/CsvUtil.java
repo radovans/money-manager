@@ -95,8 +95,8 @@ public class CsvUtil {
 					transaction.getAmount() == null ? "" : transaction.getAmount().toString().replace(".", ","),
 					transaction.getAmountInCzk() == null ? "" : transaction.getAmountInCzk().toString().replace(".", ",") + " Kč",
 					transaction.getCurrency() == null ? "" : transaction.getCurrency(),
-					transaction.getMainCategory() == null ? "" : transaction.getMainCategory().getName(),
 					transaction.getCategory() == null ? "" : transaction.getCategory().getName(),
+					transaction.getSubcategory() == null ? "" : transaction.getSubcategory().getName(),
 					transaction.getAccount() == null ? "" : transaction.getAccount().getName(),
 					transaction.getLabel() == null ? "" : transaction.getLabel()};
 			writer.writeNext(data);

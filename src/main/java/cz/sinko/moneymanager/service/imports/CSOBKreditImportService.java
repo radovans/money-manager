@@ -38,8 +38,8 @@ public class CSOBKreditImportService implements ImportService {
 				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[2]));
 				transactionEntity.setAmountInCzk(null);
 				transactionEntity.setCurrency(null);
-				transactionEntity.setMainCategory(null);
 				transactionEntity.setCategory(null);
+				transactionEntity.setSubcategory(null);
 				transactionEntity.setAccount(csobKredit);
 				transactionEntity.setLabel(null);
 				transactions.add(transactionEntity);

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.repository.TransactionRepository;
-import cz.sinko.moneymanager.repository.model.MainCategory;
+import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,22 +23,22 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionService {
 
 	private final TransactionRepository transactionRepository;
-	private final MainCategoryService mainCategoryService;
+	private final CategoryService categoryService;
 
 	public Page<Transaction> findTransactions(Sort sort, int page, int size, String search, LocalDate from, LocalDate to, String category)
 			throws ResourceNotFoundException {
 		if (search != null) {
 			if (category != null) {
-				MainCategory mainCategoryEntity = mainCategoryService.findByName(category);
-				return transactionRepository.findByNoteLikeAndDateBetweenAndMainCategory(PageRequest.of(page, size, sort),
-						"%" + search + "%", from, to, mainCategoryEntity);
+				Category categoryEntity = categoryService.findByName(category);
+				return transactionRepository.findByNoteLikeAndDateBetweenAndCategory(PageRequest.of(page, size, sort),
+						"%" + search + "%", from, to, categoryEntity);
 			}
 			return transactionRepository.findByNoteLikeAndDateBetween(PageRequest.of(page, size, sort),
 					"%" + search + "%", from, to);
 		} else {
 			if (category != null) {
-				MainCategory mainCategoryEntity = mainCategoryService.findByName(category);
-				return transactionRepository.findByDateBetweenAndMainCategory(PageRequest.of(page, size, sort), from, to, mainCategoryEntity);
+				Category categoryEntity = categoryService.findByName(category);
+				return transactionRepository.findByDateBetweenAndCategory(PageRequest.of(page, size, sort), from, to, categoryEntity);
 			}
 			return transactionRepository.findByDateBetween(PageRequest.of(page, size, sort), from, to);
 		}
@@ -48,16 +48,16 @@ public class TransactionService {
 		return transactionRepository.findByDateBetween(from, to);
 	}
 
-	public List<Transaction> findTransactions(LocalDate from, LocalDate to, String mainCategory)
+	public List<Transaction> findTransactions(LocalDate from, LocalDate to, String category)
 			throws ResourceNotFoundException {
-		MainCategory mainCategoryEntity = mainCategoryService.findByName(mainCategory);
-		return transactionRepository.findByDateBetweenAndMainCategory(from, to, mainCategoryEntity);
+		Category categoryEntity = categoryService.findByName(category);
+		return transactionRepository.findByDateBetweenAndCategory(from, to, categoryEntity);
 	}
 
-	public List<Transaction> findTransactions(YearMonth from, YearMonth to, String mainCategory)
+	public List<Transaction> findTransactions(YearMonth from, YearMonth to, String category)
 			throws ResourceNotFoundException {
-		MainCategory mainCategoryEntity = mainCategoryService.findByName(mainCategory);
-		return transactionRepository.findByDateBetweenAndMainCategory(from.atDay(1), to.atEndOfMonth(), mainCategoryEntity);
+		Category categoryEntity = categoryService.findByName(category);
+		return transactionRepository.findByDateBetweenAndCategory(from.atDay(1), to.atEndOfMonth(), categoryEntity);
 	}
 
 	public List<Transaction> findTransactions(YearMonth from, YearMonth to) {

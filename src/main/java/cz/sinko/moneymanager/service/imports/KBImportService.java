@@ -38,8 +38,8 @@ public class KBImportService implements ImportService {
 				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[4]));
 				transactionEntity.setAmountInCzk(null);
 				transactionEntity.setCurrency(null);
-				transactionEntity.setMainCategory(null);
 				transactionEntity.setCategory(null);
+				transactionEntity.setSubcategory(null);
 				transactionEntity.setAccount(komercniBanka);
 				transactionEntity.setLabel(null);
 				transactions.add(transactionEntity);

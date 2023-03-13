@@ -15,7 +15,7 @@ public class RecurrentTransactionDto {
 	private String note;
 	private BigDecimal amount;
 	private String currency;
-	private String mainCategory;
+	private String subcategory;
 	private String category;
 	private String account;
 	private String label;

@@ -27,8 +27,8 @@ import cz.sinko.moneymanager.api.response.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto;
 import cz.sinko.moneymanager.api.response.MonthStatisticDto;
 import cz.sinko.moneymanager.api.response.StatisticsDto;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Category;
-import cz.sinko.moneymanager.repository.model.MainCategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.StatisticsService;
 import cz.sinko.moneymanager.service.TransactionService;
@@ -69,12 +69,12 @@ public class StatisticsController {
 		validateRequest(from, to);
 		if (category == null) {
 			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
-			Map<MainCategory, List<Transaction>> transactionsByMainCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getMainCategory));
-			return StatisticsService.calculateMainCategoriesStatistics(transactionsByMainCategories);
-		} else {
-			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 			Map<Category, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getCategory));
 			return StatisticsService.calculateCategoriesStatistics(transactionsByCategories);
+		} else {
+			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+			Map<Subcategory, List<Transaction>> transactionsBySubcategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getSubcategory));
+			return StatisticsService.calculateSubcategoriesStatistics(transactionsBySubcategories);
 		}
 	}
 

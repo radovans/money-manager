@@ -12,8 +12,8 @@ import lombok.Data;
 public class ConfigurationJson {
 
 	private List<String> accounts;
-	private List<String> mainCategories;
-	private Map<String, String> categories;
+	private List<String> categories;
+	private Map<String, String> subcategories;
 	private List<RuleDto> rules;
 	private List<PlannedTransactionDto> plannedTransactions;
 	private List<RecurrentTransactionDto> recurrentTransactions;

@@ -38,8 +38,8 @@ public class UnicreditImportService implements ImportService {
 				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[1]));
 				transactionEntity.setAmountInCzk(null);
 				transactionEntity.setCurrency("EUR");
-				transactionEntity.setMainCategory(null);
 				transactionEntity.setCategory(null);
+				transactionEntity.setSubcategory(null);
 				transactionEntity.setAccount(unicredit);
 				transactionEntity.setLabel(null);
 				transactions.add(transactionEntity);

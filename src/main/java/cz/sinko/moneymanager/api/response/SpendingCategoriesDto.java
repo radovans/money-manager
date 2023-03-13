@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 public class SpendingCategoriesDto {
 
-	private List<MainCategoryStatisticsDto> categories = new ArrayList<>();
+	private List<CategoryStatisticsDto> categories = new ArrayList<>();
 	private BigDecimal total;
 	private String totalFormatted;
 

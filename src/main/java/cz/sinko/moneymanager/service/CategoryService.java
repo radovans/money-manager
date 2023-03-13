@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @AllArgsConstructor
 public class CategoryService {
+
 	private final CategoryRepository categoryRepository;
 
 	public Category findByName(String category) throws ResourceNotFoundException {

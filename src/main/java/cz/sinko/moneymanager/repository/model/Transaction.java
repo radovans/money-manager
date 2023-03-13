@@ -43,11 +43,11 @@ public class Transaction {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "main_category_id", nullable = false)
-	private MainCategory mainCategory;
+	private Category category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id", nullable = false)
-	private Category category;
+	private Subcategory subcategory;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "account_id", nullable = false)
