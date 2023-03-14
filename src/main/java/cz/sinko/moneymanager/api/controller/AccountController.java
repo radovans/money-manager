@@ -75,7 +75,7 @@ public class AccountController {
 		Long id = Long.parseLong(accountId);
 		Account account = accountService.find(id);
 		statisticsService.calculateIncomeExpense(account);
-		List<Transaction> transactions = transactionService.find(id);
+		List<Transaction> transactions = transactionService.findByAccountId(id);
 		AccountWithTransactionsDto response = new AccountMapperImpl().mapAccountWithTransactions(account);
 		response.setTransactions(TransactionMapper.t().mapTransactionWithoutAccount(transactions));
 		return response;

@@ -1,7 +1,6 @@
 package cz.sinko.moneymanager.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -26,14 +25,16 @@ public class AccountService {
 	}
 
 	public Account find(Long accountId) throws ResourceNotFoundException {
-		Optional<Account> account = accountRepository.findById(accountId);
-		if (account.isEmpty()) {
-			throw ResourceNotFoundException.createWith("Account", " with id '" + accountId + "' was not found");
-		}
-		return account.get();
+		return accountRepository.findById(accountId).orElseThrow(() -> ResourceNotFoundException.createWith("Account",
+				" with id '" + accountId + "' was not found"));
 	}
 
-	public Account createAccount(AccountDto accountDto) throws ResourceNotFoundException {
+	public Account find(String account) throws ResourceNotFoundException {
+		return accountRepository.findByName(account).orElseThrow(() -> ResourceNotFoundException.createWith("Account",
+				" with name '" + account + "' was not found"));
+	}
+
+	public Account createAccount(AccountDto accountDto) {
 		Account account = new AccountMapperImpl().map(accountDto);
 		return accountRepository.save(account);
 	}
@@ -43,8 +44,7 @@ public class AccountService {
 	}
 
 	public Account updateAccount(Long id, AccountDto accountDto) throws ResourceNotFoundException {
-		Account account = accountRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.createWith("Account",
-				" with id '" + accountDto.getId() + "' was not found"));
+		Account account = find(id);
 		account.setName(accountDto.getName());
 		return accountRepository.save(account);
 	}

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.mapper.SubcategoryMapper;
 import cz.sinko.moneymanager.api.response.SubcategoryDto;
+import cz.sinko.moneymanager.facade.SubcategoryFacade;
 import cz.sinko.moneymanager.repository.SubcategoryRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -37,6 +38,8 @@ public class SubcategoryController {
 
 	private final SubcategoryService subcategoryService;
 
+	private final SubcategoryFacade subcategoryFacade;
+
 	@GetMapping
 	public List<SubcategoryDto> getSubcategories(@RequestParam(required = false) String category)
 			throws ResourceNotFoundException {
@@ -50,10 +53,10 @@ public class SubcategoryController {
 	}
 
 	@PostMapping
-	public SubcategoryDto createSubcategory(@RequestBody SubcategoryDto SubcategoryDto)
+	public SubcategoryDto createSubcategory(@RequestBody SubcategoryDto subcategoryDto)
 			throws ResourceNotFoundException {
-		log.info("Creating new Subcategory: '{}'.", SubcategoryDto);
-		return SubcategoryMapper.t().mapSubcategory(subcategoryService.createSubcategory(SubcategoryDto));
+		log.info("Creating new Subcategory: '{}'.", subcategoryDto);
+		return SubcategoryMapper.t().mapSubcategory(subcategoryService.createSubcategory(subcategoryDto));
 	}
 
 	@DeleteMapping("/{id}")
@@ -64,10 +67,10 @@ public class SubcategoryController {
 	}
 
 	@PutMapping("/{id}")
-	public SubcategoryDto updateSubcategory(@PathVariable Long id, @RequestBody SubcategoryDto SubcategoryDto)
+	public SubcategoryDto updateSubcategory(@PathVariable Long id, @RequestBody SubcategoryDto subcategoryDto)
 			throws ResourceNotFoundException {
 		log.info("Updating Subcategory with id: '{}'.", id);
-		return SubcategoryMapper.t().mapSubcategory(subcategoryService.updateSubcategory(id, SubcategoryDto));
+		return SubcategoryMapper.t().mapSubcategory(subcategoryFacade.updateSubcategory(id, subcategoryDto));
 	}
 
 }

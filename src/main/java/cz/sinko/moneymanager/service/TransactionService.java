@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.api.mapper.TransactionMapper;
+import cz.sinko.moneymanager.api.response.TransactionDto;
 import cz.sinko.moneymanager.repository.TransactionRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -25,6 +27,8 @@ public class TransactionService {
 
 	private final TransactionRepository transactionRepository;
 	private final CategoryService categoryService;
+	private final SubcategoryService subcategoryService;
+	private final AccountService accountService;
 
 	public Page<Transaction> find(Sort sort, int page, int size, String search, LocalDate from, LocalDate to, String category)
 			throws ResourceNotFoundException {
@@ -43,6 +47,11 @@ public class TransactionService {
 			}
 			return transactionRepository.findByDateBetween(PageRequest.of(page, size, sort), from, to);
 		}
+	}
+
+	public Transaction find(Long transactionId) throws ResourceNotFoundException {
+		return transactionRepository.findById(transactionId).orElseThrow(() -> ResourceNotFoundException.createWith("Transaction",
+				" with id '" + transactionId + "' was not found"));
 	}
 
 	public List<Transaction> find(LocalDate from, LocalDate to) {
@@ -69,7 +78,7 @@ public class TransactionService {
 		return transactionRepository.findAll();
 	}
 
-	public List<Transaction> find(Long accountId) {
+	public List<Transaction> findByAccountId(Long accountId) {
 		return transactionRepository.findByAccountId(accountId);
 	}
 
@@ -85,4 +94,49 @@ public class TransactionService {
 	public void update(Transaction transaction) {
 		transactionRepository.save(transaction);
 	}
+
+	public Transaction createTransaction(TransactionDto transactionDto) throws ResourceNotFoundException {
+		Transaction transaction = TransactionMapper.t().map(transactionDto);
+		if (transactionDto.getSubcategory() != null) {
+			transaction.setSubcategory(subcategoryService.find(transactionDto.getSubcategory()));
+		}
+		if (transactionDto.getCategory() != null) {
+			transaction.setCategory(categoryService.find(transactionDto.getCategory()));
+		}
+		if (transactionDto.getAccount() != null) {
+			transaction.setAccount(accountService.find(transactionDto.getAccount()));
+		}
+		return transactionRepository.save(transaction);
+	}
+
+	public void deleteTransaction(Long id) {
+		transactionRepository.deleteById(id);
+	}
+
+	public Transaction updateTransaction(Long id, TransactionDto transactionDto) throws ResourceNotFoundException {
+		Transaction transaction = find(id);
+		transaction.setDate(transactionDto.getDate());
+		transaction.setRecipient(transactionDto.getRecipient());
+		transaction.setNote(transactionDto.getNote());
+		transaction.setAmount(transactionDto.getAmount());
+		transaction.setAmountInCzk(transactionDto.getAmountInCzk());
+		transaction.setCurrency(transactionDto.getCurrency());
+		transaction.setCategory(categoryService.find(transactionDto.getCategory()));
+		transaction.setSubcategory(subcategoryService.find(transactionDto.getSubcategory()));
+		transaction.setAccount(accountService.find(transactionDto.getAccount()));
+		transaction.setLabel(transactionDto.getLabel());
+		return transactionRepository.save(transaction);
+	}
+
+	public void updateTransactions(Category newCategory, Subcategory oldSubcategory) {
+		List<Transaction> transactions = find(oldSubcategory);
+		for (Transaction transaction : transactions) {
+			if (transaction.getCategory() != null && newCategory != null
+					&& !transaction.getCategory().getName().equals(newCategory.getName())) {
+				transaction.setCategory(newCategory);
+				update(transaction);
+			}
+		}
+	}
+
 }

@@ -35,6 +35,11 @@ public interface TransactionMapper {
 	@Named(value = "mapTransactionWithoutAccount")
 	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
+	@Mapping(target = "account", source = "account.name")
 	TransactionDto mapTransactionWithoutAccount(Transaction source);
 
+	@Mapping(target = "subcategory", ignore = true)
+	@Mapping(target = "category", ignore = true)
+	@Mapping(target = "account", ignore = true)
+	Transaction map(TransactionDto source);
 }

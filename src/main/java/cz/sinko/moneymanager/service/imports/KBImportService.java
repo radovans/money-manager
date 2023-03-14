@@ -28,7 +28,7 @@ public class KBImportService implements ImportService {
 		List<String[]> rows = CsvUtil.getRowsFromCsv(file, ';', Charset.forName("CP1250"));
 		List<Transaction> transactions = new ArrayList<>();
 		List<String[]> failedRows = new ArrayList<>();
-		Account komercniBanka = accountRepository.findByName("Komerční banka");
+		Account komercniBanka = accountRepository.findByName("Komerční banka").get();
 		rows.stream().skip(18).forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();

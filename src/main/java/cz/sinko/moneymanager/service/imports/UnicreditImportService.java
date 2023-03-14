@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import cz.sinko.moneymanager.service.CsvUtil;
+import cz.sinko.moneymanager.repository.AccountRepository;
 import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.model.Transaction;
-import cz.sinko.moneymanager.repository.AccountRepository;
+import cz.sinko.moneymanager.service.CsvUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,7 +28,7 @@ public class UnicreditImportService implements ImportService {
 		List<String[]> rows = CsvUtil.getRowsFromCsv(file, ';', StandardCharsets.UTF_8);
 		List<Transaction> transactions = new ArrayList<>();
 		List<String[]> failedRows = new ArrayList<>();
-		Account unicredit = accountRepository.findByName("Unicredit");
+		Account unicredit = accountRepository.findByName("Unicredit").get();
 		rows.stream().skip(4).forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();

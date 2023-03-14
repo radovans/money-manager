@@ -16,7 +16,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -46,59 +45,52 @@ import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.CategoryService;
 import cz.sinko.moneymanager.service.CsvUtil;
 import cz.sinko.moneymanager.service.SubcategoryService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
+@AllArgsConstructor
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
 	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
 	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
 
-	@Autowired
 	private AccountRepository accountRepository;
 
-	@Autowired
 	private CategoryService categoryService;
 
-	@Autowired
 	private SubcategoryService subcategoryService;
 
-	@Autowired
 	private TransactionRepository transactionRepository;
 
-	@Autowired
 	private PlannedTransactionRepository plannedTransactionRepository;
 
-	@Autowired
 	private RecurrentTransactionRepository recurrentTransactionRepository;
 
-	@Autowired
 	private CategoryRepository categoryRepository;
 
-	@Autowired
 	private SubcategoryRepository subcategoryRepository;
 
-	@Autowired
 	private RuleRepository ruleRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(MoneyManagerApplication.class, args);
 	}
 
-	@PostConstruct
-	private void postConstruct() {
-		ConfigurationJson configurationJson = openConfiguration();
-		setupAccounts(configurationJson.getAccounts());
-		setupCategories(configurationJson.getCategories());
-		setupSubcategories(configurationJson.getSubcategories());
-		setupRules(configurationJson.getRules());
-		setupPlannedTransactions(configurationJson.getPlannedTransactions());
-		setupRecurrentTransactions(configurationJson.getRecurrentTransactions());
-		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
-		importTransactions(transactions);
-	}
+//	@PostConstruct
+//	private void postConstruct() {
+//		ConfigurationJson configurationJson = openConfiguration();
+//		setupAccounts(configurationJson.getAccounts());
+//		setupCategories(configurationJson.getCategories());
+//		setupSubcategories(configurationJson.getSubcategories());
+//		setupRules(configurationJson.getRules());
+//		setupPlannedTransactions(configurationJson.getPlannedTransactions());
+//		setupRecurrentTransactions(configurationJson.getRecurrentTransactions());
+//		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
+//		importTransactions(transactions);
+//	}
 
 	private void setupPlannedTransactions(List<PlannedTransactionDto> plannedTransactions) {
 		plannedTransactions.forEach(plannedTransaction -> {
@@ -111,7 +103,7 @@ public class MoneyManagerApplication {
 				plannedTransactionEntity.setCurrency(plannedTransaction.getCurrency());
 				plannedTransactionEntity.setCategory(categoryService.find(plannedTransaction.getCategory()));
 				plannedTransactionEntity.setSubcategory(subcategoryService.find(plannedTransaction.getSubcategory()));
-				plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()));
+				plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()).get());
 				plannedTransactionEntity.setLabel(plannedTransaction.getLabel());
 				plannedTransactionEntity.setExpenseType(plannedTransaction.getExpenseType() != null ?
 						ExpenseType.valueOf(plannedTransaction.getExpenseType()) :
@@ -137,7 +129,7 @@ public class MoneyManagerApplication {
 				recurrentTransactionEntity.setCurrency(recurrentTransaction.getCurrency());
 				recurrentTransactionEntity.setCategory(categoryService.find(recurrentTransaction.getCategory()));
 				recurrentTransactionEntity.setSubcategory(subcategoryService.find(recurrentTransaction.getSubcategory()));
-				recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()));
+				recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()).get());
 				recurrentTransactionEntity.setLabel(recurrentTransaction.getLabel());
 				recurrentTransactionEntity.setExpenseType(recurrentTransaction.getExpenseType() != null ?
 						ExpenseType.valueOf(recurrentTransaction.getExpenseType()) :
@@ -212,7 +204,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-				//				.limit(1)
+				.limit(0)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();
@@ -224,7 +216,7 @@ public class MoneyManagerApplication {
 						transactionEntity.setCurrency(transaction[5].isBlank() ? CZK : transaction[5]);
 						transactionEntity.setCategory(categoryService.find(transaction[6]));
 						transactionEntity.setSubcategory(subcategoryService.find(transaction[7]));
-						transactionEntity.setAccount(accountRepository.findByName(transaction[8]));
+						transactionEntity.setAccount(accountRepository.findByName(transaction[8]).get());
 						transactionEntity.setLabel(transaction[9]);
 						transactionRepository.save(transactionEntity);
 						log.info("Transaction saved '{}'", transactionEntity);

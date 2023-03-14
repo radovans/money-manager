@@ -28,7 +28,7 @@ public class AirbankImportService implements ImportService {
 		List<String[]> rows = CsvUtil.getRowsFromCsv(file, ';', Charset.forName("CP1250"));
 		List<Transaction> transactions = new ArrayList<>();
 		List<String[]> failedRows = new ArrayList<>();
-		Account airBank = accountRepository.findByName("AirBank");
+		Account airBank = accountRepository.findByName("AirBank").get();
 		rows.stream().skip(1).forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();

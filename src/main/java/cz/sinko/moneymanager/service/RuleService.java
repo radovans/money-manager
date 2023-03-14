@@ -40,6 +40,11 @@ public class RuleService {
 		return ruleRepository.findAll(sort);
 	}
 
+	public Rule find(Long ruleId) throws ResourceNotFoundException {
+		return ruleRepository.findById(ruleId).orElseThrow(() -> ResourceNotFoundException.createWith("Rule",
+				" with id '" + ruleId + "' was not found"));
+	}
+
 	public Rule createRule(RuleDto ruleDto) throws ResourceNotFoundException {
 		Rule rule = RuleMapper.t().map(ruleDto);
 		if (!ruleDto.isSkipTransaction()) {
@@ -68,8 +73,7 @@ public class RuleService {
 	}
 
 	public Rule updateRule(Long id, RuleDto ruleDto) throws ResourceNotFoundException {
-		Rule rule = ruleRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.createWith("Rule",
-				" with id '" + ruleDto.getId() + "' was not found"));
+		Rule rule = find(id);
 		rule.setType(ruleDto.getType());
 		rule.setKey(ruleDto.getKey());
 		rule.setSkipTransaction(ruleDto.isSkipTransaction());

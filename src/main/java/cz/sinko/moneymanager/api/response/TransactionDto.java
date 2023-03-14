@@ -22,6 +22,7 @@ public class TransactionDto {
 	private String currency;
 	private String subcategory;
 	private String category;
+	private String account;
 	private String label;
 
 	public void setAmountInCzk(BigDecimal amountInCzk) {

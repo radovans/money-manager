@@ -28,7 +28,7 @@ public class CSOBImportService implements ImportService {
 		List<String[]> rows = CsvUtil.getRowsFromCsv(file, ';', StandardCharsets.UTF_8);
 		List<Transaction> transactions = new ArrayList<>();
 		List<String[]> failedRows = new ArrayList<>();
-		Account csob = accountRepository.findByName("ČSOB");
+		Account csob = accountRepository.findByName("ČSOB").get();
 		rows.stream().skip(3).forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();

@@ -12,7 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +28,7 @@ import cz.sinko.moneymanager.api.mapper.TransactionMapper;
 import cz.sinko.moneymanager.api.response.AccountTransactionDto;
 import cz.sinko.moneymanager.api.response.AccountTransactionsDto;
 import cz.sinko.moneymanager.api.response.SortTransactionFields;
+import cz.sinko.moneymanager.api.response.TransactionDto;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.TransactionService;
 import lombok.AllArgsConstructor;
@@ -103,6 +109,27 @@ public class TransactionController {
 		headers.add(HttpHeaders.CONTENT_RANGE,
 				"0-" + transactions.getNumberOfElements() + "/" + transactions.getTotalElements());
 		return headers;
+	}
+
+	@PostMapping
+	public TransactionDto createTransaction(@RequestBody TransactionDto transactionDto)
+			throws ResourceNotFoundException {
+		log.info("Creating new Transaction: '{}'.", transactionDto);
+		return TransactionMapper.t().map(transactionService.createTransaction(transactionDto));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
+		log.info("Deleting Transaction with id: '{}'.", id);
+		transactionService.deleteTransaction(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@PutMapping("/{id}")
+	public TransactionDto updateTransaction(@PathVariable Long id, @RequestBody TransactionDto transactionDto)
+			throws ResourceNotFoundException {
+		log.info("Updating Transaction with id: '{}'.", id);
+		return TransactionMapper.t().map(transactionService.updateTransaction(id, transactionDto));
 	}
 
 }

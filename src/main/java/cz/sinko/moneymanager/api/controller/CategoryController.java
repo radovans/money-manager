@@ -37,9 +37,9 @@ public class CategoryController {
 	}
 
 	@PostMapping
-	public CategoryDto createCategory(@RequestBody CategoryDto CategoryDto) throws ResourceNotFoundException {
-		log.info("Creating new Category: '{}'.", CategoryDto);
-		return CategoryMapper.t().mapCategory(categoryService.createCategory(CategoryDto));
+	public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) throws ResourceNotFoundException {
+		log.info("Creating new Category: '{}'.", categoryDto);
+		return CategoryMapper.t().mapCategory(categoryService.createCategory(categoryDto));
 	}
 
 	@DeleteMapping("/{id}")
@@ -50,10 +50,10 @@ public class CategoryController {
 	}
 
 	@PutMapping("/{id}")
-	public CategoryDto updateCategory(@PathVariable Long id, @RequestBody CategoryDto CategoryDto)
+	public CategoryDto updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto)
 			throws ResourceNotFoundException {
 		log.info("Updating Category with id: '{}'.", id);
-		return CategoryMapper.t().mapCategory(categoryService.updateCategory(id, CategoryDto));
+		return CategoryMapper.t().mapCategory(categoryService.updateCategory(id, categoryDto));
 	}
 
 }
