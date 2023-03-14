@@ -15,9 +15,9 @@ import cz.sinko.moneymanager.api.mapper.RuleMapper;
 import cz.sinko.moneymanager.api.response.RuleDto;
 import cz.sinko.moneymanager.repository.RuleRepository;
 import cz.sinko.moneymanager.repository.model.Category;
-import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Rule;
 import cz.sinko.moneymanager.repository.model.RuleType;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class RuleService {
 	@Autowired
 	private RuleRepository ruleRepository;
 
-	public List<Rule> getRules(Sort sort) {
+	public List<Rule> find(Sort sort) {
 		return ruleRepository.findAll(sort);
 	}
 
@@ -51,14 +51,14 @@ public class RuleService {
 
 	private void mapSubcategory(RuleDto ruleDto, Rule rule) throws ResourceNotFoundException {
 		if (ruleDto.getSubcategory() != null && !ruleDto.getSubcategory().isBlank()) {
-			Subcategory subcategory = subcategoryService.findByName(ruleDto.getSubcategory());
+			Subcategory subcategory = subcategoryService.find(ruleDto.getSubcategory());
 			rule.setSubcategory(subcategory);
 		}
 	}
 
 	private void mapCategory(RuleDto ruleDto, Rule rule) throws ResourceNotFoundException {
 		if (ruleDto.getCategory() != null && !ruleDto.getCategory().isBlank()) {
-			Category category = categoryService.findByName(ruleDto.getCategory());
+			Category category = categoryService.find(ruleDto.getCategory());
 			rule.setCategory(category);
 		}
 	}
@@ -70,12 +70,11 @@ public class RuleService {
 	public Rule updateRule(Long id, RuleDto ruleDto) throws ResourceNotFoundException {
 		Rule rule = ruleRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.createWith("Rule",
 				" with id '" + ruleDto.getId() + "' was not found"));
-		Rule newRule = RuleMapper.t().map(ruleDto);
-		rule.setType(newRule.getType());
-		rule.setKey(newRule.getKey());
-		rule.setSkipTransaction(newRule.isSkipTransaction());
-		rule.setRecipient(newRule.getRecipient());
-		rule.setNote(newRule.getNote());
+		rule.setType(ruleDto.getType());
+		rule.setKey(ruleDto.getKey());
+		rule.setSkipTransaction(ruleDto.isSkipTransaction());
+		rule.setRecipient(ruleDto.getRecipient());
+		rule.setNote(ruleDto.getNote());
 		if (!ruleDto.isSkipTransaction()) {
 			mapSubcategory(ruleDto, rule);
 			mapCategory(ruleDto, rule);
@@ -83,7 +82,7 @@ public class RuleService {
 			rule.setSubcategory(null);
 			rule.setCategory(null);
 		}
-		rule.setLabel(newRule.getLabel());
+		rule.setLabel(ruleDto.getLabel());
 		return ruleRepository.save(rule);
 	}
 
@@ -115,10 +114,10 @@ public class RuleService {
 				transaction.setNote(rule.getNote());
 			}
 			if (rule.getCategory() != null) {
-				transaction.setCategory(categoryService.findByName(rule.getCategory().getName()));
+				transaction.setCategory(categoryService.find(rule.getCategory().getName()));
 			}
 			if (rule.getSubcategory() != null) {
-				transaction.setSubcategory(subcategoryService.findByName(rule.getSubcategory().getName()));
+				transaction.setSubcategory(subcategoryService.find(rule.getSubcategory().getName()));
 			}
 			if (rule.getLabel() != null) {
 				transaction.setLabel(rule.getLabel());

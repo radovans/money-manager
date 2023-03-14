@@ -28,22 +28,24 @@ import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
 import cz.sinko.moneymanager.api.response.RecurrentTransactionDto;
 import cz.sinko.moneymanager.api.response.RuleDto;
 import cz.sinko.moneymanager.repository.AccountRepository;
+import cz.sinko.moneymanager.repository.CategoryRepository;
 import cz.sinko.moneymanager.repository.PlannedTransactionRepository;
 import cz.sinko.moneymanager.repository.RecurrentTransactionRepository;
 import cz.sinko.moneymanager.repository.RuleRepository;
+import cz.sinko.moneymanager.repository.SubcategoryRepository;
 import cz.sinko.moneymanager.repository.TransactionRepository;
 import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.model.Category;
-import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.ExpenseType;
 import cz.sinko.moneymanager.repository.model.Frequency;
 import cz.sinko.moneymanager.repository.model.PlannedTransaction;
 import cz.sinko.moneymanager.repository.model.RecurrentTransaction;
 import cz.sinko.moneymanager.repository.model.Rule;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
-import cz.sinko.moneymanager.service.SubcategoryService;
-import cz.sinko.moneymanager.service.CsvUtil;
 import cz.sinko.moneymanager.service.CategoryService;
+import cz.sinko.moneymanager.service.CsvUtil;
+import cz.sinko.moneymanager.service.SubcategoryService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -71,6 +73,12 @@ public class MoneyManagerApplication {
 
 	@Autowired
 	private RecurrentTransactionRepository recurrentTransactionRepository;
+
+	@Autowired
+	private CategoryRepository categoryRepository;
+
+	@Autowired
+	private SubcategoryRepository subcategoryRepository;
 
 	@Autowired
 	private RuleRepository ruleRepository;
@@ -101,8 +109,8 @@ public class MoneyManagerApplication {
 				plannedTransactionEntity.setNote(plannedTransaction.getNote());
 				plannedTransactionEntity.setAmount(plannedTransaction.getAmount());
 				plannedTransactionEntity.setCurrency(plannedTransaction.getCurrency());
-				plannedTransactionEntity.setCategory(categoryService.findByName(plannedTransaction.getCategory()));
-				plannedTransactionEntity.setSubcategory(subcategoryService.findByName(plannedTransaction.getSubcategory()));
+				plannedTransactionEntity.setCategory(categoryService.find(plannedTransaction.getCategory()));
+				plannedTransactionEntity.setSubcategory(subcategoryService.find(plannedTransaction.getSubcategory()));
 				plannedTransactionEntity.setAccount(accountRepository.findByName(plannedTransaction.getAccount()));
 				plannedTransactionEntity.setLabel(plannedTransaction.getLabel());
 				plannedTransactionEntity.setExpenseType(plannedTransaction.getExpenseType() != null ?
@@ -127,8 +135,8 @@ public class MoneyManagerApplication {
 				recurrentTransactionEntity.setAmount(recurrentTransaction.getAmount());
 				recurrentTransactionEntity.setAmountInCzk(recurrentTransaction.getAmount());
 				recurrentTransactionEntity.setCurrency(recurrentTransaction.getCurrency());
-				recurrentTransactionEntity.setCategory(categoryService.findByName(recurrentTransaction.getCategory()));
-				recurrentTransactionEntity.setSubcategory(subcategoryService.findByName(recurrentTransaction.getSubcategory()));
+				recurrentTransactionEntity.setCategory(categoryService.find(recurrentTransaction.getCategory()));
+				recurrentTransactionEntity.setSubcategory(subcategoryService.find(recurrentTransaction.getSubcategory()));
 				recurrentTransactionEntity.setAccount(accountRepository.findByName(recurrentTransaction.getAccount()));
 				recurrentTransactionEntity.setLabel(recurrentTransaction.getLabel());
 				recurrentTransactionEntity.setExpenseType(recurrentTransaction.getExpenseType() != null ?
@@ -153,10 +161,10 @@ public class MoneyManagerApplication {
 				ruleEntity.setNote(rule.getNote());
 				if (!rule.isSkipTransaction()) {
 					if (rule.getCategory() != null) {
-						ruleEntity.setCategory(categoryService.findByName(rule.getCategory()));
+						ruleEntity.setCategory(categoryService.find(rule.getCategory()));
 					}
 					if (rule.getSubcategory() != null) {
-						ruleEntity.setSubcategory(subcategoryService.findByName(rule.getSubcategory()));
+						ruleEntity.setSubcategory(subcategoryService.find(rule.getSubcategory()));
 					}
 				}
 				ruleEntity.setLabel(rule.getLabel());
@@ -181,7 +189,7 @@ public class MoneyManagerApplication {
 		categories.forEach(category -> {
 			Category categoryEntity = new Category();
 			categoryEntity.setName(category);
-			categoryService.save(categoryEntity);
+			categoryRepository.save(categoryEntity);
 			log.info("Main category saved '{}'", categoryEntity);
 		});
 	}
@@ -191,8 +199,8 @@ public class MoneyManagerApplication {
 			try {
 				Subcategory subcategoryEntity = new Subcategory();
 				subcategoryEntity.setName(subcategory);
-				subcategoryEntity.setCategory(categoryService.findByName(category));
-				subcategoryService.save(subcategoryEntity);
+				subcategoryEntity.setCategory(categoryService.find(category));
+				subcategoryRepository.save(subcategoryEntity);
 				log.info("Category saved '{}'", subcategoryEntity);
 			} catch (ResourceNotFoundException e) {
 				throw new RuntimeException(e);
@@ -204,7 +212,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-//				.limit(1)
+				//				.limit(1)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();
@@ -214,8 +222,8 @@ public class MoneyManagerApplication {
 						transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
 						transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
 						transactionEntity.setCurrency(transaction[5].isBlank() ? CZK : transaction[5]);
-						transactionEntity.setCategory(categoryService.findByName(transaction[6]));
-						transactionEntity.setSubcategory(subcategoryService.findByName(transaction[7]));
+						transactionEntity.setCategory(categoryService.find(transaction[6]));
+						transactionEntity.setSubcategory(subcategoryService.find(transaction[7]));
 						transactionEntity.setAccount(accountRepository.findByName(transaction[8]));
 						transactionEntity.setLabel(transaction[9]);
 						transactionRepository.save(transactionEntity);

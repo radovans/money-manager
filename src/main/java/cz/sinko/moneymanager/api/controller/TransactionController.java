@@ -53,9 +53,9 @@ public class TransactionController {
 		log.info("Finding all transactions with sort: '{}', direction: '{}', page: '{}'. size: '{}', search: '{}', from: '{}', to: '{}'.", parsedSort, parsedDirection, page, size, search, from, to);
 		Page<Transaction> transactions;
 		if (Integer.parseInt(size) <= 0) {
-			transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.MAX_VALUE, search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.MAX_VALUE, search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 		} else {
-			transactions = transactionService.findTransactions(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 		}
 		List<AccountTransactionDto> accountTransactionDtos = TransactionMapper.t().map(transactions);
 		AccountTransactionsDto response = new AccountTransactionsDto();

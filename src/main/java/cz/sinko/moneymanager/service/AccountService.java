@@ -21,11 +21,11 @@ public class AccountService {
 
 	private final AccountRepository accountRepository;
 
-	public List<Account> getAccounts(Sort sort) {
+	public List<Account> find(Sort sort) {
 		return accountRepository.findAll(sort);
 	}
 
-	public Account getAccount(Long accountId) throws ResourceNotFoundException {
+	public Account find(Long accountId) throws ResourceNotFoundException {
 		Optional<Account> account = accountRepository.findById(accountId);
 		if (account.isEmpty()) {
 			throw ResourceNotFoundException.createWith("Account", " with id '" + accountId + "' was not found");
@@ -45,8 +45,7 @@ public class AccountService {
 	public Account updateAccount(Long id, AccountDto accountDto) throws ResourceNotFoundException {
 		Account account = accountRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.createWith("Account",
 				" with id '" + accountDto.getId() + "' was not found"));
-		Account newAccount = new AccountMapperImpl().map(accountDto);
-		account.setName(newAccount.getName());
+		account.setName(accountDto.getName());
 		return accountRepository.save(account);
 	}
 

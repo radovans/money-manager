@@ -42,7 +42,7 @@ public class AccountController {
 	@GetMapping
 	public List<AccountDto> getAccounts() {
 		log.info("Finding all accounts.");
-		List<Account> accounts = accountService.getAccounts(Sort.by("id").ascending());
+		List<Account> accounts = accountService.find(Sort.by("id").ascending());
 		statisticsService.calculateIncomeExpense(accounts);
 		return new AccountMapperImpl().map(accounts);
 	}
@@ -73,9 +73,9 @@ public class AccountController {
 		validateRequest(accountId);
 		log.info("Finding account with id '{}'", accountId);
 		Long id = Long.parseLong(accountId);
-		Account account = accountService.getAccount(id);
+		Account account = accountService.find(id);
 		statisticsService.calculateIncomeExpense(account);
-		List<Transaction> transactions = transactionService.findTransactions(id);
+		List<Transaction> transactions = transactionService.find(id);
 		AccountWithTransactionsDto response = new AccountMapperImpl().mapAccountWithTransactions(account);
 		response.setTransactions(TransactionMapper.t().mapTransactionWithoutAccount(transactions));
 		return response;

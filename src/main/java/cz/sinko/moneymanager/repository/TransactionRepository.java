@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import cz.sinko.moneymanager.repository.model.Category;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
 
 @Repository
@@ -32,4 +33,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 	List<Transaction> findByDateBetweenAndCategory(LocalDate from, LocalDate to, Category category);
 
+	List<Transaction> findBySubcategory(Subcategory subcategory);
 }

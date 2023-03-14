@@ -12,6 +12,7 @@ public class SubcategoryDto {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long id;
 	private String name;
+	private String category;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal amount;
 

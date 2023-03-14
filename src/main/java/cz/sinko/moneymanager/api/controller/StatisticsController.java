@@ -47,7 +47,7 @@ public class StatisticsController {
 
 	@GetMapping
 	public StatisticsDto getStatistics() {
-		List<Transaction> transactions = transactionService.findTransactions();
+		List<Transaction> transactions = transactionService.find();
 		IncomeExpenseStatementDto incomeExpenseStatementDto = statisticsService.createIncomeExpenseStatement(transactions);
 
 		List<Transaction> lastYearTransactions = transactionService.filterTransactionsByYear(transactions,
@@ -68,11 +68,11 @@ public class StatisticsController {
 			throws RequestValidationException, ResourceNotFoundException {
 		validateRequest(from, to);
 		if (category == null) {
-			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
+			List<Transaction> transactions = transactionService.find(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
 			Map<Category, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getCategory));
 			return StatisticsService.calculateCategoriesStatistics(transactionsByCategories);
 		} else {
-			List<Transaction> transactions = transactionService.findTransactions(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+			List<Transaction> transactions = transactionService.find(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 			Map<Subcategory, List<Transaction>> transactionsBySubcategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getSubcategory));
 			return StatisticsService.calculateSubcategoriesStatistics(transactionsBySubcategories);
 		}
@@ -83,7 +83,7 @@ public class StatisticsController {
 			@RequestParam(defaultValue = "2020-01") String from,
 			@RequestParam(defaultValue = "2023-12") String to) throws RequestValidationException {
 		validateYearMonthRequest(from, to);
-		List<Transaction> transactions = transactionService.findTransactions(YearMonth.parse(from), YearMonth.parse(to));
+		List<Transaction> transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to));
 		Map<YearMonth, Double> transactionsByMonth = transactions.stream()
 				.collect(Collectors.groupingBy(transaction -> YearMonth.from(transaction.getDate()),
 						TreeMap::new,
@@ -111,9 +111,9 @@ public class StatisticsController {
 		validateYearMonthRequest(from, to);
 		List<Transaction> transactions;
 		if (salaryOnly) {
-			transactions = transactionService.findTransactions(YearMonth.parse(from), YearMonth.parse(to), "Príjem");
+			transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to), "Príjem");
 		} else {
-			transactions = transactionService.findTransactions(YearMonth.parse(from), YearMonth.parse(to));
+			transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to));
 		}
 		Map<String, List<MonthStatisticDto>> response = new HashMap<>();
 		Map<Year, List<Transaction>> transactionsByYear = transactions.stream().collect(Collectors.groupingBy(transaction -> Year.from(transaction.getDate())));

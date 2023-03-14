@@ -19,4 +19,5 @@ public interface CategoryMapper {
 
 	List<CategoryDto> mapCategory(List<Category> source);
 
+	Category map(CategoryDto categoryDto);
 }

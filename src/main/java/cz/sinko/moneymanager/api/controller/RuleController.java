@@ -31,7 +31,7 @@ public class RuleController {
 	@GetMapping
 	public List<RuleDto> getRules() {
 		log.info("Finding all rules.");
-		return RuleMapper.t().map(ruleService.getRules(Sort.by("id").ascending()));
+		return RuleMapper.t().map(ruleService.find(Sort.by("id").ascending()));
 	}
 
 	@PostMapping

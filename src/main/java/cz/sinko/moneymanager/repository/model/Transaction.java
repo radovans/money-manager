@@ -42,11 +42,11 @@ public class Transaction {
 	private String currency;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "main_category_id", nullable = false)
+	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id", nullable = false)
+	@JoinColumn(name = "subcategory_id", nullable = false)
 	private Subcategory subcategory;
 
 	@ManyToOne(fetch = FetchType.LAZY)

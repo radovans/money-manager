@@ -28,7 +28,7 @@ public class DownloadController {
 	@GetMapping(value = "/transactions/csv")
 	public ResponseEntity<?> downloadTransactions() {
 		log.info("Creating csv file with transactions.");
-		List<Transaction> transactions = transactionService.findTransactions();
+		List<Transaction> transactions = transactionService.find();
 		CsvUtil.createCsvFile(transactions, EXPORT_CSV_FILE);
 		return ResponseEntity.ok().build();
 	}
