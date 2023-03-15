@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.RequestValidationException;
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.api.ValidationUtils;
 import cz.sinko.moneymanager.api.response.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto;
 import cz.sinko.moneymanager.api.response.MonthStatisticDto;

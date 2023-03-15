@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.RequestValidationException;
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.api.ValidationUtils;
 import cz.sinko.moneymanager.api.mapper.AccountMapperImpl;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
 import cz.sinko.moneymanager.api.response.AccountDto;

@@ -54,8 +54,10 @@ import lombok.extern.slf4j.Slf4j;
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
-	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
-	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+//	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
+//	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
+	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
 
 	private AccountRepository accountRepository;
 
@@ -79,18 +81,18 @@ public class MoneyManagerApplication {
 		SpringApplication.run(MoneyManagerApplication.class, args);
 	}
 
-//	@PostConstruct
-//	private void postConstruct() {
-//		ConfigurationJson configurationJson = openConfiguration();
-//		setupAccounts(configurationJson.getAccounts());
-//		setupCategories(configurationJson.getCategories());
-//		setupSubcategories(configurationJson.getSubcategories());
-//		setupRules(configurationJson.getRules());
-//		setupPlannedTransactions(configurationJson.getPlannedTransactions());
-//		setupRecurrentTransactions(configurationJson.getRecurrentTransactions());
-//		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
-//		importTransactions(transactions);
-//	}
+	@PostConstruct
+	private void postConstruct() {
+		ConfigurationJson configurationJson = openConfiguration();
+		setupAccounts(configurationJson.getAccounts());
+		setupCategories(configurationJson.getCategories());
+		setupSubcategories(configurationJson.getSubcategories());
+		setupRules(configurationJson.getRules());
+		setupPlannedTransactions(configurationJson.getPlannedTransactions());
+		setupRecurrentTransactions(configurationJson.getRecurrentTransactions());
+		List<String[]> transactions = CsvUtil.getRowsFromCsv(IMPORT_CSV_FILE, ',', StandardCharsets.UTF_8);
+		importTransactions(transactions);
+	}
 
 	private void setupPlannedTransactions(List<PlannedTransactionDto> plannedTransactions) {
 		plannedTransactions.forEach(plannedTransaction -> {
@@ -204,7 +206,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-				.limit(0)
+//				.limit(0)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();

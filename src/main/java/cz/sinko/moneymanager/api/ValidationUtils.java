@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller;
+package cz.sinko.moneymanager.api;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
