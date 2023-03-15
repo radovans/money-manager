@@ -1,9 +1,9 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
 import lombok.Data;
 
 @Data
-public class CategoryDto {
+public class AccountDto {
 
 	private Long id;
 	private String name;

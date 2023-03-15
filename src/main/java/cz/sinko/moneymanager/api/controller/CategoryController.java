@@ -1,8 +1,6 @@
 package cz.sinko.moneymanager.api.controller;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.mapper.CategoryMapper;
-import cz.sinko.moneymanager.api.response.CategoryDto;
-import cz.sinko.moneymanager.repository.model.Category;
-import cz.sinko.moneymanager.service.CategoryService;
+import cz.sinko.moneymanager.api.dto.CategoryDto;
+import cz.sinko.moneymanager.facade.CategoryFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,24 +24,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CategoryController {
 
-	private final CategoryService categoryService;
+	private final CategoryFacade categoryFacade;
 
 	@GetMapping
 	public List<CategoryDto> getCategories() {
 		log.info("Finding all categories.");
-		return CategoryMapper.t().mapCategory(categoryService.find().stream().sorted(Comparator.comparing(Category::getName)).collect(Collectors.toList()));
+		return categoryFacade.getCategories();
 	}
 
 	@PostMapping
-	public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) throws ResourceNotFoundException {
+	public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
 		log.info("Creating new Category: '{}'.", categoryDto);
-		return CategoryMapper.t().mapCategory(categoryService.createCategory(categoryDto));
+		return categoryFacade.createCategory(categoryDto);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
 		log.info("Deleting Category with id: '{}'.", id);
-		categoryService.deleteCategory(id);
+		categoryFacade.deleteCategory(id);
 		return ResponseEntity.ok().build();
 	}
 
@@ -53,7 +49,7 @@ public class CategoryController {
 	public CategoryDto updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto)
 			throws ResourceNotFoundException {
 		log.info("Updating Category with id: '{}'.", id);
-		return CategoryMapper.t().mapCategory(categoryService.updateCategory(id, categoryDto));
+		return categoryFacade.updateCategory(id, categoryDto);
 	}
 
 }

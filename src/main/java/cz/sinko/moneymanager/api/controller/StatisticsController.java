@@ -15,21 +15,18 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import cz.sinko.moneymanager.api.RequestValidationException;
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.ValidationUtils;
-import cz.sinko.moneymanager.api.response.SpendingCategoriesDto;
-import cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto;
-import cz.sinko.moneymanager.api.response.MonthStatisticDto;
-import cz.sinko.moneymanager.api.response.StatisticsDto;
-import cz.sinko.moneymanager.repository.model.Subcategory;
+import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
+import cz.sinko.moneymanager.api.dto.MonthStatisticDto;
+import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
+import cz.sinko.moneymanager.api.dto.StatisticsDto;
 import cz.sinko.moneymanager.repository.model.Category;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.StatisticsService;
 import cz.sinko.moneymanager.service.TransactionService;
@@ -66,8 +63,7 @@ public class StatisticsController {
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
 			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
 			@RequestParam(required = false) String category)
-			throws RequestValidationException, ResourceNotFoundException {
-		validateRequest(from, to);
+			throws ResourceNotFoundException {
 		if (category == null) {
 			List<Transaction> transactions = transactionService.find(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
 			Map<Category, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getCategory));
@@ -82,8 +78,7 @@ public class StatisticsController {
 	@GetMapping("/year-month/all")
 	public List<MonthStatisticDto> getYearMonthStatistics(
 			@RequestParam(defaultValue = "2020-01") String from,
-			@RequestParam(defaultValue = "2023-12") String to) throws RequestValidationException {
-		validateYearMonthRequest(from, to);
+			@RequestParam(defaultValue = "2023-12") String to) {
 		List<Transaction> transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to));
 		Map<YearMonth, Double> transactionsByMonth = transactions.stream()
 				.collect(Collectors.groupingBy(transaction -> YearMonth.from(transaction.getDate()),
@@ -96,7 +91,7 @@ public class StatisticsController {
 			monthStatisticDto.setBalance(BigDecimal.valueOf(amount).setScale(2, RoundingMode.HALF_UP));
 			response.add(monthStatisticDto);
 		});
-		response.forEach(monthStatisticDto -> monthStatisticDto.setCumulativeAmount(response.stream()
+		response.forEach(monthStatisticDto -> monthStatisticDto.setCumulativeBalance(response.stream()
 				.filter(monthStatistic -> monthStatistic.getMonth().isBefore(monthStatisticDto.getMonth()))
 				.map(MonthStatisticDto::getBalance)
 				.reduce(BigDecimal.ZERO, BigDecimal::add).add(monthStatisticDto.getBalance())));
@@ -108,8 +103,7 @@ public class StatisticsController {
 			@RequestParam(defaultValue = "2020-01") String from,
 			@RequestParam(defaultValue = "2023-12") String to,
 			@RequestParam(defaultValue = "false") boolean salaryOnly)
-			throws RequestValidationException, ResourceNotFoundException {
-		validateYearMonthRequest(from, to);
+			throws ResourceNotFoundException {
 		List<Transaction> transactions;
 		if (salaryOnly) {
 			transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to), "Príjem");
@@ -124,8 +118,12 @@ public class StatisticsController {
 					transactionsByYearMonth.entrySet().forEach(yearMonthListEntry -> {
 						MonthStatisticDto monthStatisticDto = new MonthStatisticDto();
 						monthStatisticDto.setMonth(yearMonthListEntry.getKey());
-						BigDecimal incomes = BigDecimal.valueOf(yearMonthListEntry.getValue().stream().filter(transaction -> transaction.getAmountInCzk().doubleValue() > 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP);
-						BigDecimal expenses = BigDecimal.valueOf(yearMonthListEntry.getValue().stream().filter(transaction -> transaction.getAmountInCzk().doubleValue() < 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP);
+						BigDecimal incomes = BigDecimal.valueOf(yearMonthListEntry.getValue().stream().filter(transaction ->
+								transaction.getAmountInCzk().doubleValue()
+										> 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP);
+						BigDecimal expenses = BigDecimal.valueOf(yearMonthListEntry.getValue().stream().filter(transaction ->
+								transaction.getAmountInCzk().doubleValue()
+										< 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP);
 						monthStatisticDto.setIncomes(incomes);
 						monthStatisticDto.setExpenses(expenses);
 						monthStatisticDto.setBalance(incomes.add(expenses));
@@ -142,26 +140,14 @@ public class StatisticsController {
 			MonthStatisticDto monthStatisticDto = new MonthStatisticDto();
 			monthStatisticDto.setMonth(YearMonth.of(1900, monthListEntry.getKey()));
 			monthStatisticDto.setBalance(BigDecimal.valueOf(monthListEntry.getValue().stream().mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP).divide(BigDecimal.valueOf(monthListEntry.getValue().stream().map(Transaction::getDate).map(date -> Year.from(date).getValue()).distinct().count()), RoundingMode.HALF_UP));
-			monthStatisticDto.setExpenses(BigDecimal.valueOf(monthListEntry.getValue().stream().filter(transaction -> transaction.getAmountInCzk().doubleValue() < 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP).divide(BigDecimal.valueOf(monthListEntry.getValue().stream().map(Transaction::getDate).map(date -> Year.from(date).getValue()).distinct().count()), RoundingMode.HALF_UP));
+			monthStatisticDto.setExpenses(BigDecimal.valueOf(monthListEntry.getValue().stream().filter(transaction ->
+					transaction.getAmountInCzk().doubleValue()
+							< 0).mapToDouble(transaction -> transaction.getAmountInCzk().doubleValue()).sum()).setScale(2, RoundingMode.HALF_UP).divide(BigDecimal.valueOf(monthListEntry.getValue().stream().map(Transaction::getDate).map(date -> Year.from(date).getValue()).distinct().count()), RoundingMode.HALF_UP));
 			monthStatistics.add(monthStatisticDto);
 		});
 		monthStatistics.sort(Comparator.comparing(MonthStatisticDto::getMonth));
 		response.put("xAverage", monthStatistics);
 		return response;
-	}
-
-	private void validateRequest(String from, String to) throws RequestValidationException {
-		List<ObjectError> errors = new ArrayList<>();
-		ValidationUtils.validateOffsetDateTimeFormat(from, errors, "from");
-		ValidationUtils.validateOffsetDateTimeFormat(to, errors, "to");
-		ValidationUtils.checkErrors(errors);
-	}
-
-	private void validateYearMonthRequest(String from, String to) throws RequestValidationException {
-		List<ObjectError> errors = new ArrayList<>();
-		ValidationUtils.validateYearMonthFormat(from, errors, "from");
-		ValidationUtils.validateYearMonthFormat(to, errors, "to");
-		ValidationUtils.checkErrors(errors);
 	}
 
 }

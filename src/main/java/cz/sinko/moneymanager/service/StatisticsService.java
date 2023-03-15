@@ -9,11 +9,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto;
-import cz.sinko.moneymanager.api.response.CategoryStatisticsDto;
-import cz.sinko.moneymanager.api.response.SpendingCategoriesDto;
-import cz.sinko.moneymanager.repository.TransactionRepository;
-import cz.sinko.moneymanager.repository.model.Account;
+import cz.sinko.moneymanager.api.dto.CategoryStatisticsDto;
+import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
+import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
@@ -24,24 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @AllArgsConstructor
 public class StatisticsService {
-
-	private final TransactionRepository transactionRepository;
-
-	public void calculateIncomeExpense(List<Account> accounts) {
-		for (Account account : accounts) {
-			calculateIncomeExpense(account);
-		}
-	}
-
-	public void calculateIncomeExpense(Account account) {
-		List<Transaction> transactions = transactionRepository.findByAccountId(account.getId());
-		account.setBalance(transactions.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add));
-		account.setIncome(transactions.stream().map(Transaction::getAmountInCzk).filter(amount ->
-				amount.compareTo(BigDecimal.ZERO) > 0).reduce(BigDecimal.ZERO, BigDecimal::add));
-		account.setExpense(transactions.stream().map(Transaction::getAmountInCzk).filter(amount ->
-				amount.compareTo(BigDecimal.ZERO) < 0).reduce(BigDecimal.ZERO, BigDecimal::add));
-		account.setNumberOfTransactions(transactions.size());
-	}
 
 	public IncomeExpenseStatementDto createIncomeExpenseStatement(List<Transaction> transactions) {
 		BigDecimal balance = calculateBalance(transactions);

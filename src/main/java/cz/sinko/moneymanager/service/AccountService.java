@@ -6,8 +6,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.mapper.AccountMapperImpl;
-import cz.sinko.moneymanager.api.response.AccountDto;
+import cz.sinko.moneymanager.api.dto.AccountDto;
+import cz.sinko.moneymanager.api.mapper.AccountMapper;
 import cz.sinko.moneymanager.repository.AccountRepository;
 import cz.sinko.moneymanager.repository.model.Account;
 import lombok.AllArgsConstructor;
@@ -35,7 +35,7 @@ public class AccountService {
 	}
 
 	public Account createAccount(AccountDto accountDto) {
-		Account account = new AccountMapperImpl().map(accountDto);
+		Account account = AccountMapper.t().map(accountDto);
 		return accountRepository.save(account);
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-import cz.sinko.moneymanager.api.response.CategoryDto;
+import cz.sinko.moneymanager.api.dto.CategoryDto;
 import cz.sinko.moneymanager.repository.model.Category;
 
 @Mapper()
@@ -15,9 +15,9 @@ public interface CategoryMapper {
 		return Mappers.getMapper(CategoryMapper.class);
 	}
 
-	CategoryDto mapCategory(Category source);
+	CategoryDto map(Category source);
 
-	List<CategoryDto> mapCategory(List<Category> source);
+	List<CategoryDto> map(List<Category> source);
 
 	Category map(CategoryDto categoryDto);
 }

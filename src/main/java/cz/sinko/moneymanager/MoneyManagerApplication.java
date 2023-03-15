@@ -1,6 +1,6 @@
 package cz.sinko.moneymanager;
 
-import static cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto.CZK;
+import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +23,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
-import cz.sinko.moneymanager.api.response.RecurrentTransactionDto;
-import cz.sinko.moneymanager.api.response.RuleDto;
+import cz.sinko.moneymanager.api.dto.PlannedTransactionDto;
+import cz.sinko.moneymanager.api.dto.RecurrentTransactionDto;
+import cz.sinko.moneymanager.api.dto.RuleDto;
 import cz.sinko.moneymanager.repository.AccountRepository;
 import cz.sinko.moneymanager.repository.CategoryRepository;
 import cz.sinko.moneymanager.repository.PlannedTransactionRepository;
@@ -54,8 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
-//	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
-//	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+	//	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
+	//	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
 	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
 	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
 
@@ -206,7 +206,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-//				.limit(0)
+				//				.limit(0)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();

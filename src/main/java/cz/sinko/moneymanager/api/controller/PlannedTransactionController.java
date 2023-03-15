@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cz.sinko.moneymanager.api.dto.PlannedTransactionDto;
 import cz.sinko.moneymanager.api.mapper.PlannedTransactionMapper;
-import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
 import cz.sinko.moneymanager.repository.PlannedTransactionRepository;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.CsvUtil;
@@ -36,7 +36,7 @@ public class PlannedTransactionController {
 
 	@GetMapping(value = "/csv", produces = "text/csv")
 	public ResponseEntity<?> createPlannedTransactionsCsv() {
-		return createCsvFile(PlannedTransactionMapper.t().mapToTransaction(plannedTransactionRepository.findAll()), PLANNED_TRANSACTIONS_CSV_FILENAME);
+		return createCsvFile(PlannedTransactionMapper.t().mapToTransactionList(plannedTransactionRepository.findAll()), PLANNED_TRANSACTIONS_CSV_FILENAME);
 	}
 
 	private ResponseEntity<?> createCsvFile(List<Transaction> transactions, String csvFilename) {

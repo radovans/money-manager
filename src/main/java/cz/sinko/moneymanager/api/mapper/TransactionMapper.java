@@ -9,8 +9,8 @@ import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
-import cz.sinko.moneymanager.api.response.AccountTransactionDto;
-import cz.sinko.moneymanager.api.response.TransactionDto;
+import cz.sinko.moneymanager.api.dto.AccountTransactionDto;
+import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.repository.model.Transaction;
 
 @Mapper(uses = { CategoryMapper.class })
@@ -20,26 +20,21 @@ public interface TransactionMapper {
 		return Mappers.getMapper(TransactionMapper.class);
 	}
 
-	@IterableMapping(qualifiedByName = "map")
-	List<AccountTransactionDto> map(Page<Transaction> source);
-
-	@Named(value = "map")
-	@Mapping(target = "account", source = "account.name")
-	@Mapping(target = "subcategory", source = "subcategory.name")
-	@Mapping(target = "category", source = "category.name")
-	AccountTransactionDto map(Transaction source);
-
-	@IterableMapping(qualifiedByName = "mapTransactionWithoutAccount")
-	List<TransactionDto> mapTransactionWithoutAccount(List<Transaction> source);
-
-	@Named(value = "mapTransactionWithoutAccount")
 	@Mapping(target = "subcategory", source = "subcategory.name")
 	@Mapping(target = "category", source = "category.name")
 	@Mapping(target = "account", source = "account.name")
-	TransactionDto mapTransactionWithoutAccount(Transaction source);
+	TransactionDto map(Transaction source);
 
 	@Mapping(target = "subcategory", ignore = true)
 	@Mapping(target = "category", ignore = true)
 	@Mapping(target = "account", ignore = true)
 	Transaction map(TransactionDto source);
+
+	@Mapping(target = "account", source = "account.name")
+	@Mapping(target = "subcategory", source = "subcategory.name")
+	@Mapping(target = "category", source = "category.name")
+	AccountTransactionDto mapToAccountTransactionDto(Transaction source);
+
+	List<AccountTransactionDto> mapToAccountTransactionDtoList(Page<Transaction> source);
+
 }

@@ -1,6 +1,6 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
-import static cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto.CZK;
+import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

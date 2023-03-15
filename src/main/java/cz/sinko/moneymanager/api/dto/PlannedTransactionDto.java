@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
 import java.math.BigDecimal;
 

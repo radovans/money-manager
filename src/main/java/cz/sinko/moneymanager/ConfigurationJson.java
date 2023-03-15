@@ -3,9 +3,9 @@ package cz.sinko.moneymanager;
 import java.util.List;
 import java.util.Map;
 
-import cz.sinko.moneymanager.api.response.PlannedTransactionDto;
-import cz.sinko.moneymanager.api.response.RecurrentTransactionDto;
-import cz.sinko.moneymanager.api.response.RuleDto;
+import cz.sinko.moneymanager.api.dto.PlannedTransactionDto;
+import cz.sinko.moneymanager.api.dto.RecurrentTransactionDto;
+import cz.sinko.moneymanager.api.dto.RuleDto;
 import lombok.Data;
 
 @Data

@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import cz.sinko.moneymanager.api.response.SubcategoryDto;
+import cz.sinko.moneymanager.api.dto.SubcategoryDto;
 import cz.sinko.moneymanager.repository.model.Subcategory;
 
 @Mapper()
@@ -17,10 +17,11 @@ public interface SubcategoryMapper {
 	}
 
 	@Mapping(target = "category", source = "category.name")
-	SubcategoryDto mapSubcategory(Subcategory source);
+	SubcategoryDto map(Subcategory source);
 
-	List<SubcategoryDto> mapSubcategory(List<Subcategory> source);
+	List<SubcategoryDto> map(List<Subcategory> source);
 
 	@Mapping(target = "category", ignore = true)
 	Subcategory map(SubcategoryDto source);
+
 }

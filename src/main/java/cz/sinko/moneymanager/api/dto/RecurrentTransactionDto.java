@@ -1,8 +1,6 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
 import java.math.BigDecimal;
-import java.time.MonthDay;
-import java.time.Period;
 
 import lombok.Data;
 

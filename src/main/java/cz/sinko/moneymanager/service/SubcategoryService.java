@@ -1,10 +1,11 @@
 package cz.sinko.moneymanager.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.mapper.SubcategoryMapper;
-import cz.sinko.moneymanager.api.response.SubcategoryDto;
+import cz.sinko.moneymanager.api.dto.SubcategoryDto;
 import cz.sinko.moneymanager.repository.SubcategoryRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -17,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public class SubcategoryService {
 	private final SubcategoryRepository subcategoryRepository;
 
-	private final CategoryService categoryService;
+	public List<Subcategory> findAll() {
+		return subcategoryRepository.findAll();
+	}
 
 	public Subcategory find(String subcategory) throws ResourceNotFoundException {
 		return subcategoryRepository.findByName(subcategory).orElseThrow(() -> ResourceNotFoundException.createWith("Subcategory",
@@ -29,9 +32,11 @@ public class SubcategoryService {
 				" with id '" + subcategoryId + "' was not found"));
 	}
 
-	public Subcategory createSubcategory(SubcategoryDto subcategoryDto) throws ResourceNotFoundException {
-		Subcategory subcategory = SubcategoryMapper.t().map(subcategoryDto);
-		Category category = categoryService.find(subcategoryDto.getCategory());
+	public List<Subcategory> findByCategory(Category category) {
+		return subcategoryRepository.findByCategory(category);
+	}
+
+	public Subcategory createSubcategory(Subcategory subcategory, Category category) {
 		subcategory.setCategory(category);
 		return subcategoryRepository.save(subcategory);
 	}
@@ -40,13 +45,13 @@ public class SubcategoryService {
 		subcategoryRepository.deleteById(id);
 	}
 
-	public Subcategory updateSubcategory(Long id, SubcategoryDto subcategoryDto) throws ResourceNotFoundException {
+	public Subcategory updateSubcategory(Long id, SubcategoryDto subcategoryDto, Category newCategory)
+			throws ResourceNotFoundException {
 		Subcategory subcategory = find(id);
 		subcategory.setName(subcategoryDto.getName());
 		if (subcategory.getCategory() != null && subcategoryDto.getCategory() != null
 				&& !subcategory.getCategory().getName().equals(subcategoryDto.getCategory())) {
-			Category category = categoryService.find(subcategoryDto.getCategory());
-			subcategory.setCategory(category);
+			subcategory.setCategory(newCategory);
 		}
 		return subcategoryRepository.save(subcategory);
 	}

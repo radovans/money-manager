@@ -1,13 +1,11 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
-import static cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto.CZK;
+import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
-
-import org.dataloader.stats.Statistics;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +20,8 @@ public class AccountTransactionsDto {
 	private long total;
 	private BigDecimal totalAmount;
 	private String totalAmountFormatted;
+	private int numberOfElements;
+	private long totalElements;
 
 	public void setTotalAmount(BigDecimal totalAmount) {
 		this.totalAmount = totalAmount;

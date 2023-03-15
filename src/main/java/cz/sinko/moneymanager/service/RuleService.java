@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.mapper.RuleMapper;
-import cz.sinko.moneymanager.api.response.RuleDto;
+import cz.sinko.moneymanager.api.dto.RuleDto;
 import cz.sinko.moneymanager.repository.RuleRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Rule;

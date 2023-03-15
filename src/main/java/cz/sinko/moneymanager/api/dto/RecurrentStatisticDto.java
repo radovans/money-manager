@@ -1,9 +1,7 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 
@@ -12,7 +10,6 @@ public class RecurrentStatisticDto {
 
 	private YearMonth month;
 	private BigDecimal balance;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal cumulativeBalance;
 	private BigDecimal expenses;
 	private BigDecimal cumulativeExpenses;

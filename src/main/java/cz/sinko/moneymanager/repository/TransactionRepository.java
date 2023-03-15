@@ -17,8 +17,6 @@ import cz.sinko.moneymanager.repository.model.Transaction;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-	List<Transaction> findByAccountId(Long accountId);
-
 	@Query("SELECT t FROM Transaction t WHERE (LOWER(t.note) LIKE LOWER(:search) OR LOWER(t.recipient) LIKE LOWER(:search)) AND t.date BETWEEN :from AND :to")
 	Page<Transaction> findByNoteLikeAndDateBetween(Pageable pageable, @Param("search") String search, @Param("from") LocalDate from, @Param("to") LocalDate to);
 

@@ -1,7 +1,5 @@
 package cz.sinko.moneymanager.repository.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,9 +25,5 @@ public class Account {
 	private Long id;
 	@NonNull
 	private String name;
-	private BigDecimal balance;
-	private BigDecimal income;
-	private BigDecimal expense;
-	private Integer numberOfTransactions;
 
 }

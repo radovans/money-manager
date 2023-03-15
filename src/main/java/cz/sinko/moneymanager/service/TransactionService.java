@@ -11,8 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
-import cz.sinko.moneymanager.api.response.TransactionDto;
 import cz.sinko.moneymanager.repository.TransactionRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -76,10 +76,6 @@ public class TransactionService {
 
 	public List<Transaction> find() {
 		return transactionRepository.findAll();
-	}
-
-	public List<Transaction> findByAccountId(Long accountId) {
-		return transactionRepository.findByAccountId(accountId);
 	}
 
 	public List<Transaction> find(Subcategory subcategory) {

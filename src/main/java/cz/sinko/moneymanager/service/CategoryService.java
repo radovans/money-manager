@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.mapper.CategoryMapper;
-import cz.sinko.moneymanager.api.response.CategoryDto;
+import cz.sinko.moneymanager.api.dto.CategoryDto;
 import cz.sinko.moneymanager.repository.CategoryRepository;
 import cz.sinko.moneymanager.repository.model.Category;
 import lombok.AllArgsConstructor;

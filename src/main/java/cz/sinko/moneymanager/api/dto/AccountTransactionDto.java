@@ -1,11 +1,11 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AccountTransactionDto extends TransactionDto{
+public class AccountTransactionDto extends TransactionDto {
 
 	private String account;
 

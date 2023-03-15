@@ -1,12 +1,10 @@
-package cz.sinko.moneymanager.api.response;
+package cz.sinko.moneymanager.api.dto;
 
-import static cz.sinko.moneymanager.api.response.IncomeExpenseStatementDto.CZK;
+import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,15 +13,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CategoryStatisticsDto extends CategoryDto {
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal amount;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal amountAbs;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String amountAbsFormatted;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BigDecimal percentage;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Boolean isSubcategory;
 
 	public void setAmount(BigDecimal amount) {
