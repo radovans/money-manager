@@ -2,9 +2,8 @@ package cz.sinko.moneymanager.api.dto;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
+import cz.sinko.moneymanager.service.FormatUtil;
 import lombok.Data;
 
 @Data
@@ -19,28 +18,16 @@ public class IncomeExpenseStatementDto {
 	private String formattedExpense;
 	private String formattedSavingsRatio;
 
-	public static final String CZK = " CZK";
-
 	public IncomeExpenseStatementDto(BigDecimal balance, BigDecimal income, BigDecimal expense) {
 		this.balance = balance;
 		this.income = income;
 		this.expense = expense;
 		BigDecimal savingsRatio = calculateSavingsRatio(income, expense);
 		this.savingsRatio = savingsRatio.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-
-		DecimalFormat decimalFormat = getDecimalFormat();
-		this.formattedBalance = decimalFormat.format(balance) + CZK;
-		this.formattedIncome = decimalFormat.format(income) + CZK;
-		this.formattedExpense = decimalFormat.format(expense) + CZK;
-		this.formattedSavingsRatio = decimalFormat.format(savingsRatio) + "%";
-	}
-
-	private static DecimalFormat getDecimalFormat() {
-		DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
-		DecimalFormatSymbols customSymbol = new DecimalFormatSymbols();
-		customSymbol.setGroupingSeparator(' ');
-		decimalFormat.setDecimalFormatSymbols(customSymbol);
-		return decimalFormat;
+		this.formattedBalance = FormatUtil.formatBigDecimal(balance);
+		this.formattedIncome = FormatUtil.formatBigDecimal(income);
+		this.formattedExpense = FormatUtil.formatBigDecimal(expense);
+		this.formattedSavingsRatio = FormatUtil.formatPercentage(savingsRatio);
 	}
 
 	private BigDecimal calculateSavingsRatio(BigDecimal income, BigDecimal expense) {

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.dto.AccountTransactionDto;
@@ -29,7 +28,6 @@ public class TransactionFacade {
 
 	private final TransactionService transactionService;
 
-	@GetMapping
 	public AccountTransactionsDto getTransactions(String sort, String page, String size, String search, String from, String to, String category)
 			throws ResourceNotFoundException {
 		String parsedSort = parseSort(sort);
@@ -97,5 +95,4 @@ public class TransactionFacade {
 			return SortTransactionFields.id.name();
 		}
 	}
-
 }

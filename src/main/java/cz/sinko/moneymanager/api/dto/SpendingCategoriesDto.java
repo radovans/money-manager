@@ -1,13 +1,10 @@
 package cz.sinko.moneymanager.api.dto;
 
-import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
-
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.sinko.moneymanager.service.FormatUtil;
 import lombok.Data;
 
 @Data
@@ -19,16 +16,7 @@ public class SpendingCategoriesDto {
 
 	public void setTotal(BigDecimal total) {
 		this.total = total;
-		DecimalFormat decimalFormat = getDecimalFormat();
-		this.totalFormatted = decimalFormat.format(total) + CZK;
-	}
-
-	private static DecimalFormat getDecimalFormat() {
-		DecimalFormat decimalFormat = new DecimalFormat("###,##0.00");
-		DecimalFormatSymbols customSymbol = new DecimalFormatSymbols();
-		customSymbol.setGroupingSeparator(' ');
-		decimalFormat.setDecimalFormatSymbols(customSymbol);
-		return decimalFormat;
+		this.totalFormatted = FormatUtil.formatBigDecimal(total);
 	}
 
 }

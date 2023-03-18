@@ -2,15 +2,23 @@ package cz.sinko.moneymanager.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Year;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.dto.CategoryStatisticsDto;
 import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
+import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticDto;
+import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
 import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -28,22 +36,6 @@ public class StatisticsService {
 		BigDecimal income = calculateIncome(transactions);
 		BigDecimal expense = calculateExpense(transactions);
 		return new IncomeExpenseStatementDto(balance, income, expense);
-	}
-
-	private static BigDecimal calculateExpense(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
-				amountInCzk.compareTo(BigDecimal.ZERO)
-						< 0).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	private static BigDecimal calculateIncome(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
-				amountInCzk.compareTo(BigDecimal.ZERO)
-						> 0).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	private static BigDecimal calculateBalance(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	public static SpendingCategoriesDto calculateCategoriesStatistics(Map<Category, List<Transaction>> transactionsByCategories) {
@@ -77,6 +69,66 @@ public class StatisticsService {
 		calculatePercentage(categoryDtos);
 		response.setCategories(categoryDtos.stream().sorted(Comparator.comparing(CategoryStatisticsDto::getAmount)).collect(Collectors.toList()));
 		return response;
+	}
+
+	public List<PeriodCategoryStatisticsDto> createYearlyCategoryStatistics(List<Transaction> transactions) {
+		return createCategoryStatistics(transactions, Transaction::getCategory, Category::getName, transaction -> Year.from(transaction.getDate()));
+	}
+
+	public List<PeriodCategoryStatisticsDto> createMonthlyCategoryStatistics(List<Transaction> transactions) {
+		return createCategoryStatistics(transactions, Transaction::getCategory, Category::getName, transaction -> YearMonth.from(transaction.getDate()));
+	}
+
+	public List<PeriodCategoryStatisticsDto> createYearlySubcategoryStatistics(List<Transaction> transactions) {
+		return createCategoryStatistics(transactions, Transaction::getSubcategory, Subcategory::getName, transaction -> Year.from(transaction.getDate()));
+	}
+
+	public List<PeriodCategoryStatisticsDto> createMonthlySubcategoryStatistics(List<Transaction> transactions) {
+		return createCategoryStatistics(transactions, Transaction::getSubcategory, Subcategory::getName, transaction -> YearMonth.from(transaction.getDate()));
+	}
+
+	private <T, P> List<PeriodCategoryStatisticsDto> createCategoryStatistics(List<Transaction> transactions, Function<Transaction, T> groupingFunction, Function<T, String> nameFunction, Function<Transaction, P> periodFunction) {
+		List<PeriodCategoryStatisticsDto> response = new ArrayList<>();
+		Set<P> allPeriods = new HashSet<>();
+		transactions.forEach(transaction -> allPeriods.add(periodFunction.apply(transaction)));
+		Map<T, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(groupingFunction));
+		transactionsByCategories.forEach((category, transactionsByCategory) -> {
+			PeriodCategoryStatisticsDto periodCategoryStatisticsDto = new PeriodCategoryStatisticsDto();
+			periodCategoryStatisticsDto.setCategory(nameFunction.apply(category));
+			Map<P, List<Transaction>> transactionsByPeriod = transactionsByCategory.stream().collect(Collectors.groupingBy(periodFunction));
+			allPeriods.forEach(period -> {
+				PeriodCategoryStatisticDto periodCategoryStatisticDto = new PeriodCategoryStatisticDto();
+				periodCategoryStatisticDto.setPeriod(period.toString());
+				periodCategoryStatisticDto.setAmount(transactionsByPeriod.getOrDefault(period, new ArrayList<>()).stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add));
+				periodCategoryStatisticsDto.addPeriodCategoryStatisticDto(periodCategoryStatisticDto);
+			});
+			periodCategoryStatisticsDto.getPeriodCategoryStatistics().sort(Comparator.comparing(PeriodCategoryStatisticDto::getPeriod));
+			PeriodCategoryStatisticDto periodCategoryStatisticDto = new PeriodCategoryStatisticDto();
+			periodCategoryStatisticDto.setPeriod("Total");
+			BigDecimal totalAmount = transactionsByCategory.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
+			periodCategoryStatisticDto.setAmount(totalAmount);
+			periodCategoryStatisticsDto.addPeriodCategoryStatisticDto(periodCategoryStatisticDto);
+			periodCategoryStatisticsDto.setTotalAmount(totalAmount);
+			response.add(periodCategoryStatisticsDto);
+		});
+		response.sort(Comparator.comparing(PeriodCategoryStatisticsDto::getTotalAmount));
+		return response;
+	}
+
+	private static BigDecimal calculateExpense(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
+				amountInCzk.compareTo(BigDecimal.ZERO)
+						< 0).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	private static BigDecimal calculateIncome(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
+				amountInCzk.compareTo(BigDecimal.ZERO)
+						> 0).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	private static BigDecimal calculateBalance(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	private static void calculatePercentage(List<CategoryStatisticsDto> categories) {

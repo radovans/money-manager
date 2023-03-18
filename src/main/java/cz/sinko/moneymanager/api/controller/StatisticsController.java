@@ -25,6 +25,8 @@ import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
 import cz.sinko.moneymanager.api.dto.MonthStatisticDto;
 import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.dto.StatisticsDto;
+import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
+import cz.sinko.moneymanager.facade.StatisticsFacade;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
@@ -39,9 +41,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StatisticsController {
 
+	private final StatisticsFacade statisticsFacade;
+
 	private final TransactionService transactionService;
 
 	private final StatisticsService statisticsService;
+
+	@GetMapping("/categories/yearly")
+	public List<PeriodCategoryStatisticsDto> getYearlyCategoryStatistics() {
+		return statisticsFacade.getYearlyCategoryStatistics();
+	}
+
+	@GetMapping("/categories/monthly")
+	public List<PeriodCategoryStatisticsDto> getMonthlyCategoryStatistics() {
+		return statisticsFacade.getMonthlyCategoryStatistics();
+	}
+
+	@GetMapping("/subcategories/yearly")
+	public List<PeriodCategoryStatisticsDto> getYearlySubcategoryStatistics() {
+		return statisticsFacade.getYearlySubcategoryStatistics();
+	}
+
+	@GetMapping("/subcategories/monthly")
+	public List<PeriodCategoryStatisticsDto> getMonthlySubcategoryStatistics() {
+		return statisticsFacade.getMonthlySubcategoryStatistics();
+	}
 
 	@GetMapping
 	public StatisticsDto getStatistics() {

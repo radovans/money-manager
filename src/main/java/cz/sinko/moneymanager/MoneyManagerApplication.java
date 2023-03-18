@@ -1,7 +1,5 @@
 package cz.sinko.moneymanager;
 
-import static cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto.CZK;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -54,10 +52,10 @@ import lombok.extern.slf4j.Slf4j;
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
-	//	public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
-	//	public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
-	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
-	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
+		public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
+		public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+//	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
+//	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
 
 	private AccountRepository accountRepository;
 
@@ -215,7 +213,7 @@ public class MoneyManagerApplication {
 						transactionEntity.setNote(transaction[2]);
 						transactionEntity.setAmount(CsvUtil.parseAmount(transaction[3]));
 						transactionEntity.setAmountInCzk(CsvUtil.parseAmountWithCode(transaction[4]));
-						transactionEntity.setCurrency(transaction[5].isBlank() ? CZK : transaction[5]);
+						transactionEntity.setCurrency(transaction[5].isBlank() ? "CZK" : transaction[5]);
 						transactionEntity.setCategory(categoryService.find(transaction[6]));
 						transactionEntity.setSubcategory(subcategoryService.find(transaction[7]));
 						transactionEntity.setAccount(accountRepository.findByName(transaction[8]).get());
