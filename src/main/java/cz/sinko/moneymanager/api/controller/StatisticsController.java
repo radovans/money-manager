@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
+import cz.sinko.moneymanager.api.dto.LabelStatisticsDto;
 import cz.sinko.moneymanager.api.dto.MonthStatisticDto;
+import cz.sinko.moneymanager.api.dto.RecipientStatisticsDto;
 import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.dto.StatisticsDto;
 import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
@@ -65,6 +67,21 @@ public class StatisticsController {
 	@GetMapping("/subcategories/monthly")
 	public List<PeriodCategoryStatisticsDto> getMonthlySubcategoryStatistics() {
 		return statisticsFacade.getMonthlySubcategoryStatistics();
+	}
+
+	@GetMapping("/recipients/yearly")
+	public List<RecipientStatisticsDto> getYearlyRecipientStatistics() {
+		return statisticsFacade.getYearlyRecipientStatistics();
+	}
+
+	@GetMapping("/recipients/monthly")
+	public List<RecipientStatisticsDto> getMonthlyRecipientStatistics() {
+		return statisticsFacade.getMonthlyRecipientStatistics();
+	}
+
+	@GetMapping("/labels")
+	public List<LabelStatisticsDto> getLabelStatistics() {
+		return statisticsFacade.getLabelStatistics();
 	}
 
 	@GetMapping

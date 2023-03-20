@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import cz.sinko.moneymanager.api.dto.LabelStatisticsDto;
 import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
+import cz.sinko.moneymanager.api.dto.RecipientStatisticsDto;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.StatisticsService;
 import cz.sinko.moneymanager.service.TransactionService;
@@ -39,4 +41,20 @@ public class StatisticsFacade {
 		List<Transaction> transactions = transactionService.find();
 		return statisticsService.createMonthlySubcategoryStatistics(transactions);
 	}
+
+	public List<RecipientStatisticsDto> getYearlyRecipientStatistics() {
+		List<Transaction> transactions = transactionService.find();
+		return statisticsService.createYearlyRecipientStatistics(transactions);
+	}
+
+	public List<RecipientStatisticsDto> getMonthlyRecipientStatistics() {
+		List<Transaction> transactions = transactionService.find();
+		return statisticsService.createMonthlyRecipientStatistics(transactions);
+	}
+
+	public List<LabelStatisticsDto> getLabelStatistics() {
+		List<Transaction> transactions = transactionService.find();
+		return statisticsService.createLabelStatistics(transactions);
+	}
+
 }
