@@ -14,6 +14,7 @@ import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
 import cz.sinko.moneymanager.repository.TransactionRepository;
+import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
@@ -26,24 +27,19 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionService {
 
 	private final TransactionRepository transactionRepository;
-	private final CategoryService categoryService;
-	private final SubcategoryService subcategoryService;
-	private final AccountService accountService;
 
 	public Page<Transaction> find(Sort sort, int page, int size, String search, LocalDate from, LocalDate to, String category)
 			throws ResourceNotFoundException {
 		if (search != null) {
 			if (category != null) {
-				Category categoryEntity = categoryService.find(category);
 				return transactionRepository.findByNoteLikeAndDateBetweenAndCategory(PageRequest.of(page, size, sort),
-						"%" + search + "%", from, to, categoryEntity);
+						"%" + search + "%", from, to, category);
 			}
 			return transactionRepository.findByNoteLikeAndDateBetween(PageRequest.of(page, size, sort),
 					"%" + search + "%", from, to);
 		} else {
 			if (category != null) {
-				Category categoryEntity = categoryService.find(category);
-				return transactionRepository.findByDateBetweenAndCategory(PageRequest.of(page, size, sort), from, to, categoryEntity);
+				return transactionRepository.findByDateBetweenAndCategory(PageRequest.of(page, size, sort), from, to, category);
 			}
 			return transactionRepository.findByDateBetween(PageRequest.of(page, size, sort), from, to);
 		}
@@ -60,14 +56,12 @@ public class TransactionService {
 
 	public List<Transaction> find(LocalDate from, LocalDate to, String category)
 			throws ResourceNotFoundException {
-		Category categoryEntity = categoryService.find(category);
-		return transactionRepository.findByDateBetweenAndCategory(from, to, categoryEntity);
+		return transactionRepository.findByDateBetweenAndCategory(from, to, category);
 	}
 
 	public List<Transaction> find(YearMonth from, YearMonth to, String category)
 			throws ResourceNotFoundException {
-		Category categoryEntity = categoryService.find(category);
-		return transactionRepository.findByDateBetweenAndCategory(from.atDay(1), to.atEndOfMonth(), categoryEntity);
+		return transactionRepository.findByDateBetweenAndCategory(from.atDay(1), to.atEndOfMonth(), category);
 	}
 
 	public List<Transaction> find(YearMonth from, YearMonth to) {
@@ -91,16 +85,17 @@ public class TransactionService {
 		transactionRepository.save(transaction);
 	}
 
-	public Transaction createTransaction(TransactionDto transactionDto) throws ResourceNotFoundException {
+	public Transaction createTransaction(TransactionDto transactionDto, Category category, Subcategory subcategory, Account account)
+			throws ResourceNotFoundException {
 		Transaction transaction = TransactionMapper.t().map(transactionDto);
-		if (transactionDto.getSubcategory() != null) {
-			transaction.setSubcategory(subcategoryService.find(transactionDto.getSubcategory()));
+		if (category != null) {
+			transaction.setCategory(category);
 		}
-		if (transactionDto.getCategory() != null) {
-			transaction.setCategory(categoryService.find(transactionDto.getCategory()));
+		if (subcategory != null) {
+			transaction.setSubcategory(subcategory);
 		}
-		if (transactionDto.getAccount() != null) {
-			transaction.setAccount(accountService.find(transactionDto.getAccount()));
+		if (account != null) {
+			transaction.setAccount(account);
 		}
 		return transactionRepository.save(transaction);
 	}
@@ -109,7 +104,8 @@ public class TransactionService {
 		transactionRepository.deleteById(id);
 	}
 
-	public Transaction updateTransaction(Long id, TransactionDto transactionDto) throws ResourceNotFoundException {
+	public Transaction updateTransaction(Long id, TransactionDto transactionDto, Category category, Subcategory subcategory, Account account)
+			throws ResourceNotFoundException {
 		Transaction transaction = find(id);
 		transaction.setDate(transactionDto.getDate());
 		transaction.setRecipient(transactionDto.getRecipient());
@@ -117,9 +113,9 @@ public class TransactionService {
 		transaction.setAmount(transactionDto.getAmount());
 		transaction.setAmountInCzk(transactionDto.getAmountInCzk());
 		transaction.setCurrency(transactionDto.getCurrency());
-		transaction.setCategory(categoryService.find(transactionDto.getCategory()));
-		transaction.setSubcategory(subcategoryService.find(transactionDto.getSubcategory()));
-		transaction.setAccount(accountService.find(transactionDto.getAccount()));
+		transaction.setCategory(category);
+		transaction.setSubcategory(subcategory);
+		transaction.setAccount(account);
 		transaction.setLabel(transactionDto.getLabel());
 		return transactionRepository.save(transaction);
 	}

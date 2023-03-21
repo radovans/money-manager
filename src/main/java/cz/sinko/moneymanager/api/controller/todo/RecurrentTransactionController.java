@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller;
+package cz.sinko.moneymanager.api.controller.todo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,6 +25,7 @@ import cz.sinko.moneymanager.repository.model.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO clean up
 @RestController
 @RequestMapping("/recurrent-transactions")
 @AllArgsConstructor

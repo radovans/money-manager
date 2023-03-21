@@ -2,7 +2,7 @@ package cz.sinko.moneymanager.facade;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +16,13 @@ import cz.sinko.moneymanager.api.dto.AccountTransactionsDto;
 import cz.sinko.moneymanager.api.dto.SortTransactionFields;
 import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
+import cz.sinko.moneymanager.repository.model.Account;
+import cz.sinko.moneymanager.repository.model.Category;
+import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
+import cz.sinko.moneymanager.service.AccountService;
+import cz.sinko.moneymanager.service.CategoryService;
+import cz.sinko.moneymanager.service.SubcategoryService;
 import cz.sinko.moneymanager.service.TransactionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +34,13 @@ public class TransactionFacade {
 
 	private final TransactionService transactionService;
 
-	public AccountTransactionsDto getTransactions(String sort, String page, String size, String search, String from, String to, String category)
+	private final CategoryService categoryService;
+
+	private final SubcategoryService subcategoryService;
+
+	private final AccountService accountService;
+
+	public AccountTransactionsDto getTransactions(String sort, int page, int size, String search, LocalDateTime from, LocalDateTime to, String category)
 			throws ResourceNotFoundException {
 		String parsedSort = parseSort(sort);
 		String parsedDirection = parseDirection(sort);
@@ -42,7 +54,10 @@ public class TransactionFacade {
 
 	public TransactionDto createTransaction(TransactionDto transactionDto)
 			throws ResourceNotFoundException {
-		return TransactionMapper.t().map(transactionService.createTransaction(transactionDto));
+		Category category = categoryService.find(transactionDto.getCategory());
+		Subcategory subcategory = subcategoryService.find(transactionDto.getSubcategory());
+		Account account = accountService.find(transactionDto.getAccount());
+		return TransactionMapper.t().map(transactionService.createTransaction(transactionDto, category, subcategory, account));
 	}
 
 	public ResponseEntity<?> deleteTransaction(Long id) {
@@ -52,26 +67,28 @@ public class TransactionFacade {
 
 	public TransactionDto updateTransaction(Long id, TransactionDto transactionDto)
 			throws ResourceNotFoundException {
-		return TransactionMapper.t().map(transactionService.updateTransaction(id, transactionDto));
+		Category category = categoryService.find(transactionDto.getCategory());
+		Subcategory subcategory = subcategoryService.find(transactionDto.getSubcategory());
+		Account account = accountService.find(transactionDto.getAccount());
+		return TransactionMapper.t().map(transactionService.updateTransaction(id, transactionDto, category, subcategory, account));
 	}
 
 	private static AccountTransactionsDto createResponse(Page<Transaction> transactions, List<AccountTransactionDto> accountTransactionDtos) {
 		AccountTransactionsDto response = new AccountTransactionsDto();
 		response.setTransactions(accountTransactionDtos);
-		response.setTotal(transactions.getTotalElements());
 		response.setTotalAmount(transactions.getTotalElements() > 0 ?
 				transactions.getContent().stream().map(Transaction::getAmountInCzk).reduce(BigDecimal::add).get() :
 				BigDecimal.ZERO);
 		return response;
 	}
 
-	private Page<Transaction> getTransactions(String page, String size, String search, String from, String to, String category, String parsedSort, String parsedDirection)
+	private Page<Transaction> getTransactions(int page, int size, String search, LocalDateTime from, LocalDateTime to, String category, String parsedSort, String parsedDirection)
 			throws ResourceNotFoundException {
 		Page<Transaction> transactions;
-		if (Integer.parseInt(size) <= 0) {
-			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.MAX_VALUE, search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+		if (size <= 0) {
+			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), page, Integer.MAX_VALUE, search, LocalDate.from(from), LocalDate.from(to), category);
 		} else {
-			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), Integer.parseInt(page), Integer.parseInt(size), search, LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
+			transactions = transactionService.find(Sort.by(new Sort.Order(Sort.Direction.fromString(parsedDirection), parsedSort)), page, size, search, LocalDate.from(from), LocalDate.from(to), category);
 		}
 		return transactions;
 	}

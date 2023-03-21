@@ -1,10 +1,14 @@
 package cz.sinko.moneymanager.api;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.springframework.http.HttpHeaders;
@@ -42,6 +46,11 @@ public class GlobalExceptionHandler {
 			RequestValidationException exception = (RequestValidationException) ex;
 
 			return handleRequestValidationException(exception, headers, status, request);
+		} else if (ex instanceof ConstraintViolationException) {
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			ConstraintViolationException exception = (ConstraintViolationException) ex;
+
+			return handleConstraintViolation(exception, headers, status, request);
 		} else {
 			if (log.isWarnEnabled()) {
 				log.warn("Unknown exception type: " + ex.getClass().getName());
@@ -56,7 +65,8 @@ public class GlobalExceptionHandler {
 			HttpHeaders headers, HttpStatus status,
 			WebRequest request) {
 		List<String> errors = Collections.singletonList(ex.getMessage());
-		return handleExceptionInternal(ex, new ApiError(errors), headers, status, request);
+		String stackTrace = getStackTrace(ex);
+		return handleExceptionInternal(ex, new ApiError(errors, stackTrace), headers, status, request);
 	}
 
 	protected ResponseEntity<ApiError> handleRequestValidationException(RequestValidationException ex,
@@ -71,6 +81,17 @@ public class GlobalExceptionHandler {
 		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
 	}
 
+	protected ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex,
+			HttpHeaders headers, HttpStatus status,
+			WebRequest request) {
+		List<String> errorMessages = new ArrayList<>();
+		for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+			errorMessages.add(violation.getPropertyPath() + ": " + violation.getMessage());
+		}
+
+		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
+	}
+
 	protected ResponseEntity<ApiError> handleExceptionInternal(Exception ex, @Nullable ApiError body,
 			HttpHeaders headers, HttpStatus status,
 			WebRequest request) {
@@ -79,5 +100,12 @@ public class GlobalExceptionHandler {
 		}
 
 		return new ResponseEntity<>(body, headers, status);
+	}
+
+	public static String getStackTrace(final Throwable throwable) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
+		throwable.printStackTrace(pw);
+		return sw.getBuffer().toString();
 	}
 }

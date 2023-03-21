@@ -1,5 +1,10 @@
 package cz.sinko.moneymanager.api.controller;
 
+import java.time.LocalDateTime;
+
+import javax.validation.constraints.Min;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.api.dto.AccountTransactionsDto;
 import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.facade.TransactionFacade;
 import lombok.AllArgsConstructor;
@@ -27,19 +33,18 @@ public class TransactionController {
 
 	private final TransactionFacade transactionFacade;
 
-	//TODO fix params
 	@GetMapping
-	public ResponseEntity<?> getTransactions(
+	public AccountTransactionsDto getTransactions(
 			@RequestParam(required = false) String sort,
-			@RequestParam(defaultValue = "0") String page,
-			@RequestParam(defaultValue = Integer.MIN_VALUE + "") String size,
+			@RequestParam(defaultValue = "0") @Min(0) int page,
+			@RequestParam(defaultValue = "#{T(Integer).MIN_VALUE}") int size,
 			@RequestParam(required = false) String search,
-			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
-			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
+			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+			@RequestParam(defaultValue = "#{T(java.time.LocalDateTime).now()}") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
 			@RequestParam(required = false) String category)
 			throws ResourceNotFoundException {
 		log.info("Finding all transactions with sort: '{}', page: '{}'. size: '{}', search: '{}', from: '{}', to: '{}'.", sort, page, size, search, from, to);
-		return ResponseEntity.ok().body(transactionFacade.getTransactions(sort, page, size, search, from, to, category));
+		return transactionFacade.getTransactions(sort, page, size, search, from, to, category);
 	}
 
 	@PostMapping

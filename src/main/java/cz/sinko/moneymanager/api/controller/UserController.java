@@ -1,7 +1,6 @@
 package cz.sinko.moneymanager.api.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
-@Validated
 @Slf4j
 public class UserController {
 
 	@GetMapping("{id}")
-	public ResponseEntity<?> getUser(@PathVariable String id) {
+	public ResponseEntity<AccountDto> getUser(@PathVariable String id) {
 		return ResponseEntity.ok().body(new AccountDto());
 	}
 

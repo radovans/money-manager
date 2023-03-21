@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller;
+package cz.sinko.moneymanager.api.controller.todo;
 
 import java.util.List;
 
@@ -13,14 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import cz.sinko.moneymanager.api.ResourceNotFoundException;
+import cz.sinko.moneymanager.facade.ImportFacade;
+import cz.sinko.moneymanager.facade.RuleFacade;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.CsvUtil;
-import cz.sinko.moneymanager.service.RuleService;
-import cz.sinko.moneymanager.service.imports.AirbankImportService;
-import cz.sinko.moneymanager.service.imports.CSOBImportService;
-import cz.sinko.moneymanager.service.imports.CSOBKreditImportService;
-import cz.sinko.moneymanager.service.imports.KBImportService;
-import cz.sinko.moneymanager.service.imports.UnicreditImportService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,46 +34,37 @@ public class ProcessController {
 	private static final String UNICREDIT_CSV_FILENAME = "unicredit-export.csv";
 
 	@Autowired
-	private AirbankImportService airbankImport;
+	private ImportFacade importFacade;
 
 	@Autowired
-	private CSOBImportService csobImport;
-
-	@Autowired
-	private CSOBKreditImportService csobKreditImport;
-
-	@Autowired
-	private KBImportService kbImport;
-
-	@Autowired
-	private UnicreditImportService unicreditImport;
-
-	@Autowired
-	private RuleService rulesService;
+	private RuleFacade ruleFacade;
 
 	@PostMapping(value = "/airbank", consumes = "multipart/form-data", produces = "text/csv")
-	public ResponseEntity<?> processAirbankCsv(@RequestParam("file") MultipartFile file) {
-		return processCsvFile(file, airbankImport.parseTransactions(file), AIRBANK_CSV_FILENAME);
+	public ResponseEntity<?> processAirbankCsv(@RequestParam("file") MultipartFile file)
+			throws ResourceNotFoundException {
+		return processCsvFile(file, importFacade.airbankParseTransactions(file), AIRBANK_CSV_FILENAME);
 	}
 
 	@PostMapping(value = "/csob", consumes = "multipart/form-data", produces = "text/csv")
-	public ResponseEntity<?> processCsobCsv(@RequestParam("file") MultipartFile file) {
-		return processCsvFile(file, csobImport.parseTransactions(file), CSOB_CSV_FILENAME);
+	public ResponseEntity<?> processCsobCsv(@RequestParam("file") MultipartFile file) throws ResourceNotFoundException {
+		return processCsvFile(file, importFacade.csobParseTransactions(file), CSOB_CSV_FILENAME);
 	}
 
 	@PostMapping(value = "/csobKredit", consumes = "multipart/form-data", produces = "text/csv")
-	public ResponseEntity<?> processCsobKreditCsv(@RequestParam("file") MultipartFile file) {
-		return processCsvFile(file, csobKreditImport.parseTransactions(file), CSOB_KREDIT_CSV_FILENAME);
+	public ResponseEntity<?> processCsobKreditCsv(@RequestParam("file") MultipartFile file)
+			throws ResourceNotFoundException {
+		return processCsvFile(file, importFacade.csobKreditParseTransactions(file), CSOB_KREDIT_CSV_FILENAME);
 	}
 
 	@PostMapping(value = "/kb", consumes = "multipart/form-data", produces = "text/csv")
-	public ResponseEntity<?> processKbCsv(@RequestParam("file") MultipartFile file) {
-		return processCsvFile(file, kbImport.parseTransactions(file), KB_CSV_FILENAME);
+	public ResponseEntity<?> processKbCsv(@RequestParam("file") MultipartFile file) throws ResourceNotFoundException {
+		return processCsvFile(file, importFacade.kbParseTransactions(file), KB_CSV_FILENAME);
 	}
 
 	@PostMapping(value = "/unicredit", consumes = "multipart/form-data", produces = "text/csv")
-	public ResponseEntity<?> processUnicreditCsv(@RequestParam("file") MultipartFile file) {
-		return processCsvFile(file, unicreditImport.parseTransactions(file), UNICREDIT_CSV_FILENAME);
+	public ResponseEntity<?> processUnicreditCsv(@RequestParam("file") MultipartFile file)
+			throws ResourceNotFoundException {
+		return processCsvFile(file, importFacade.unicreditParseTransactions(file), UNICREDIT_CSV_FILENAME);
 	}
 
 	private ResponseEntity<?> processCsvFile(@RequestParam("file") MultipartFile file, List<Transaction> transactions, String csvFilename) {
@@ -85,7 +73,7 @@ public class ProcessController {
 		if (CsvUtil.hasCSVFormat(file)) {
 			try {
 				log.info("Processing csv file with transactions.");
-				List<Transaction> processedTransactions = rulesService.applyRules(transactions);
+				List<Transaction> processedTransactions = ruleFacade.applyRules(transactions);
 				log.info("File processed successfully: " + file.getOriginalFilename());
 
 				return createCsvFile(processedTransactions, csvFilename);

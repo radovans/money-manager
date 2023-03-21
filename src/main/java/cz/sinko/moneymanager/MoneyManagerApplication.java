@@ -52,10 +52,10 @@ import lombok.extern.slf4j.Slf4j;
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
-		public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
-		public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
-//	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
-//	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
+//		public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
+//		public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
+	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
 
 	private AccountRepository accountRepository;
 

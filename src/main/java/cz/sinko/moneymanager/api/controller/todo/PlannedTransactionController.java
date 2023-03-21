@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller;
+package cz.sinko.moneymanager.api.controller.todo;
 
 import java.util.List;
 
@@ -18,6 +18,7 @@ import cz.sinko.moneymanager.service.CsvUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO clean up
 @RestController
 @RequestMapping("/planned-transactions")
 @AllArgsConstructor

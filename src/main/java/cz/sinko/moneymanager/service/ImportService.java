@@ -1,46 +1,39 @@
-package cz.sinko.moneymanager.service.imports;
+package cz.sinko.moneymanager.service;
 
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import cz.sinko.moneymanager.repository.AccountRepository;
 import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.model.Transaction;
-import cz.sinko.moneymanager.service.CsvUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class AirbankImportService implements ImportService {
+public class ImportService {
 
-	@Autowired
-	private AccountRepository accountRepository;
-
-	@Override
-	public List<Transaction> parseTransactions(MultipartFile file) {
-		List<String[]> rows = CsvUtil.getRowsFromCsv(file, ';', Charset.forName("CP1250"));
+	public List<Transaction> parseTransactions(MultipartFile file, char separator, Charset charset, Account account, int skip, String datePattern, Function<String[], String> dateFunction, Function<String[], String> recipientFunction, Function<String[], String> noteFunction, Function<String[], String> amountFunction, String currency) {
+		List<String[]> rows = CsvUtil.getRowsFromCsv(file, separator, charset);
 		List<Transaction> transactions = new ArrayList<>();
 		List<String[]> failedRows = new ArrayList<>();
-		Account airBank = accountRepository.findByName("AirBank").get();
-		rows.stream().skip(1).forEach(transaction -> {
+		rows.stream().skip(skip).forEach(transaction -> {
 			try {
 				Transaction transactionEntity = new Transaction();
-				transactionEntity.setDate(LocalDate.parse(transaction[0], DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-				transactionEntity.setRecipient(transaction[9]);
-				transactionEntity.setNote(transaction[19]);
-				transactionEntity.setAmount(CsvUtil.parseAmount(transaction[5]));
+				transactionEntity.setDate(LocalDate.parse(dateFunction.apply(transaction), DateTimeFormatter.ofPattern(datePattern)));
+				transactionEntity.setRecipient(recipientFunction.apply(transaction));
+				transactionEntity.setNote(noteFunction.apply(transaction));
+				transactionEntity.setAmount(CsvUtil.parseAmount(amountFunction.apply(transaction)));
 				transactionEntity.setAmountInCzk(null);
-				transactionEntity.setCurrency(null);
+				transactionEntity.setCurrency(currency);
 				transactionEntity.setCategory(null);
 				transactionEntity.setSubcategory(null);
-				transactionEntity.setAccount(airBank);
+				transactionEntity.setAccount(account);
 				transactionEntity.setLabel(null);
 				transactions.add(transactionEntity);
 			} catch (Exception e) {
@@ -52,5 +45,4 @@ public class AirbankImportService implements ImportService {
 		}
 		return transactions;
 	}
-
 }

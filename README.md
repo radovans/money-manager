@@ -57,6 +57,8 @@ CUMULATIVE BALANCE:
 DONE - create cumulative balance site
 
 COMMON:
+- add request validations
+- separate logic into facade and service, facade should only call services, services should not call each other
 DONE - add boxes around all componenents, not only in dashboard
 DONE - add loading indicator to all charts if data are not loaded yet
 DONE - create dropdown menu for accounts, categories, rules, featured transactions, recurrent transactions, import/export

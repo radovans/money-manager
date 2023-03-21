@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller;
+package cz.sinko.moneymanager.api.controller.todo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -84,6 +84,7 @@ public class StatisticsController {
 		return statisticsFacade.getLabelStatistics();
 	}
 
+	// TODO clean up controller and move logic to service
 	@GetMapping
 	public StatisticsDto getStatistics() {
 		List<Transaction> transactions = transactionService.find();
@@ -99,6 +100,7 @@ public class StatisticsController {
 		return new StatisticsDto(incomeExpenseStatementDto, lastYearIncomeExpenseStatementDto, yearToDateIncomeExpenseStatementDto);
 	}
 
+	// TODO clean up controller and move logic to service
 	@GetMapping("/categories")
 	public SpendingCategoriesDto getSpendingCategoriesStatistics(
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
@@ -116,6 +118,7 @@ public class StatisticsController {
 		}
 	}
 
+	// TODO clean up controller and move logic to service
 	@GetMapping("/year-month/all")
 	public List<MonthStatisticDto> getYearMonthStatistics(
 			@RequestParam(defaultValue = "2020-01") String from,
@@ -139,6 +142,7 @@ public class StatisticsController {
 		return response;
 	}
 
+	// TODO clean up controller and move logic to service, separate to smaller methods
 	@GetMapping("/year-month/year")
 	public Map<String, List<MonthStatisticDto>> getYearMonthStatisticsByYear(
 			@RequestParam(defaultValue = "2020-01") String from,

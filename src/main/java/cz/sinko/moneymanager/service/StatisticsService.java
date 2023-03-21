@@ -91,6 +91,7 @@ public class StatisticsService {
 	}
 
 	public List<LabelStatisticsDto> createLabelStatistics(List<Transaction> transactions) {
+		// TODO implementation
 		return null;
 	}
 
@@ -102,6 +103,7 @@ public class StatisticsService {
 		return createRecipientStatistics(transactions, transaction -> YearMonth.from(transaction.getDate()));
 	}
 
+	// TODO clean up, separate to smaller methods
 	public <P> List<RecipientStatisticsDto> createRecipientStatistics(List<Transaction> transactions, Function<Transaction, P> periodFunction) {
 		List<RecipientStatisticsDto> response = new ArrayList<>();
 		Set<P> allPeriods = new HashSet<>();
@@ -138,6 +140,7 @@ public class StatisticsService {
 		return response;
 	}
 
+	// TODO clean up, separate to smaller methods
 	private <T, P> List<PeriodCategoryStatisticsDto> createCategoryStatistics(List<Transaction> transactions, Function<Transaction, T> groupingFunction, Function<T, String> nameFunction, Function<Transaction, P> periodFunction) {
 		List<PeriodCategoryStatisticsDto> response = new ArrayList<>();
 		Set<P> allPeriods = new HashSet<>();
