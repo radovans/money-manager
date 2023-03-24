@@ -2,8 +2,6 @@ package cz.sinko.moneymanager.api.controller;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.Min;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +19,7 @@ import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.dto.AccountTransactionsDto;
 import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.facade.TransactionFacade;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

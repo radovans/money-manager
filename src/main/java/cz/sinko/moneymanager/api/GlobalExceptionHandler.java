@@ -7,10 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +15,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.util.WebUtils;
 
+import jakarta.annotation.Nullable;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+	public static String getStackTrace(final Throwable throwable) {
+		final StringWriter sw = new StringWriter();
+		final PrintWriter pw = new PrintWriter(sw, true);
+		throwable.printStackTrace(pw);
+		return sw.getBuffer().toString();
+	}
 
 	@ExceptionHandler({
 			ResourceNotFoundException.class,
@@ -100,12 +106,5 @@ public class GlobalExceptionHandler {
 		}
 
 		return new ResponseEntity<>(body, headers, status);
-	}
-
-	public static String getStackTrace(final Throwable throwable) {
-		final StringWriter sw = new StringWriter();
-		final PrintWriter pw = new PrintWriter(sw, true);
-		throwable.printStackTrace(pw);
-		return sw.getBuffer().toString();
 	}
 }

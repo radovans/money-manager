@@ -8,12 +8,12 @@ public class RequestValidationException extends Exception {
 
 	final List<ObjectError> errors;
 
-	public static RequestValidationException createWith(List<ObjectError> errors) {
-		return new RequestValidationException(errors);
-	}
-
 	private RequestValidationException(List<ObjectError> errors) {
 		this.errors = errors;
+	}
+
+	public static RequestValidationException createWith(List<ObjectError> errors) {
+		return new RequestValidationException(errors);
 	}
 
 	public List<ObjectError> getErrors() {

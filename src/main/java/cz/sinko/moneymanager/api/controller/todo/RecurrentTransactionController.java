@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cz.sinko.moneymanager.api.mapper.RecurrentTransactionMapper;
 import cz.sinko.moneymanager.api.dto.RecurrentStatisticDto;
 import cz.sinko.moneymanager.api.dto.RecurrentTransactionDto;
+import cz.sinko.moneymanager.api.mapper.RecurrentTransactionMapper;
 import cz.sinko.moneymanager.repository.RecurrentTransactionRepository;
 import cz.sinko.moneymanager.repository.model.Frequency;
 import cz.sinko.moneymanager.repository.model.RecurrentTransaction;

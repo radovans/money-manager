@@ -13,10 +13,6 @@ public enum Frequency {
 		this.value = value;
 	}
 
-	public Period getValue() {
-		return value;
-	}
-
 	public static Frequency fromValue(String input) {
 		for (Frequency frequency : Frequency.values()) {
 			if (String.valueOf(frequency.value).equals(input)) {
@@ -24,5 +20,9 @@ public enum Frequency {
 			}
 		}
 		return null;
+	}
+
+	public Period getValue() {
+		return value;
 	}
 }

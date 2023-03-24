@@ -19,8 +19,8 @@ import cz.sinko.moneymanager.repository.model.RuleType;
 import cz.sinko.moneymanager.repository.model.Subcategory;
 import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.service.CategoryService;
-import cz.sinko.moneymanager.service.SubcategoryService;
 import cz.sinko.moneymanager.service.RuleService;
+import cz.sinko.moneymanager.service.SubcategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

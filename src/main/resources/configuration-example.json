@@ -1,10 +1,10 @@
 {
-  "accounts":[
+  "accounts": [
     "Bank account",
     "Savings account",
     "Cash"
   ],
-  "categories":[
+  "categories": [
     "Food",
     "Shopping",
     "Housing",
@@ -12,22 +12,22 @@
     "Entertainment",
     "Income"
   ],
-  "subcategories":{
-    "Groceries":"Food",
-    "Restaurants":"Food",
-    "Clothes":"Shopping",
-    "Electronics":"Shopping",
-    "Mortgage":"Housing",
-    "Bills":"Housing",
-    "Public transport":"Transport",
-    "Car":"Transport",
-    "Entertainment":"Entertainment",
-    "Salary":"Income"
+  "subcategories": {
+    "Groceries": "Food",
+    "Restaurants": "Food",
+    "Clothes": "Shopping",
+    "Electronics": "Shopping",
+    "Mortgage": "Housing",
+    "Bills": "Housing",
+    "Public transport": "Transport",
+    "Car": "Transport",
+    "Entertainment": "Entertainment",
+    "Salary": "Income"
   },
-  "rules":[
+  "rules": [
   ],
-  "plannedTransactions":[
+  "plannedTransactions": [
   ],
-  "recurrentTransactions":[
+  "recurrentTransactions": [
   ]
 }

@@ -89,16 +89,20 @@ public class CsvUtil {
 
 		for (Transaction transaction : transactions) {
 			String[] data = {
-					transaction.getDate() == null ? "" : transaction.getDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
+					transaction.getDate() == null ?
+							"" :
+							transaction.getDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
 					transaction.getRecipient() == null ? "" : transaction.getRecipient(),
 					transaction.getNote() == null ? "" : transaction.getNote(),
 					transaction.getAmount() == null ? "" : transaction.getAmount().toString().replace(".", ","),
-					transaction.getAmountInCzk() == null ? "" : transaction.getAmountInCzk().toString().replace(".", ",") + " Kč",
+					transaction.getAmountInCzk() == null ?
+							"" :
+							transaction.getAmountInCzk().toString().replace(".", ",") + " Kč",
 					transaction.getCurrency() == null ? "" : transaction.getCurrency(),
 					transaction.getCategory() == null ? "" : transaction.getCategory().getName(),
 					transaction.getSubcategory() == null ? "" : transaction.getSubcategory().getName(),
 					transaction.getAccount() == null ? "" : transaction.getAccount().getName(),
-					transaction.getLabel() == null ? "" : transaction.getLabel()};
+					transaction.getLabel() == null ? "" : transaction.getLabel() };
 			writer.writeNext(data);
 		}
 	}

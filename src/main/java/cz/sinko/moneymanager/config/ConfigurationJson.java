@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager;
+package cz.sinko.moneymanager.config;
 
 import java.util.List;
 import java.util.Map;

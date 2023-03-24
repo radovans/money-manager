@@ -40,6 +40,15 @@ public class TransactionFacade {
 
 	private final AccountService accountService;
 
+	private static AccountTransactionsDto createResponse(Page<Transaction> transactions, List<AccountTransactionDto> accountTransactionDtos) {
+		AccountTransactionsDto response = new AccountTransactionsDto();
+		response.setTransactions(accountTransactionDtos);
+		response.setTotalAmount(transactions.getTotalElements() > 0 ?
+				transactions.getContent().stream().map(Transaction::getAmountInCzk).reduce(BigDecimal::add).get() :
+				BigDecimal.ZERO);
+		return response;
+	}
+
 	public AccountTransactionsDto getTransactions(String sort, int page, int size, String search, LocalDateTime from, LocalDateTime to, String category)
 			throws ResourceNotFoundException {
 		String parsedSort = parseSort(sort);
@@ -71,15 +80,6 @@ public class TransactionFacade {
 		Subcategory subcategory = subcategoryService.find(transactionDto.getSubcategory());
 		Account account = accountService.find(transactionDto.getAccount());
 		return TransactionMapper.t().map(transactionService.updateTransaction(id, transactionDto, category, subcategory, account));
-	}
-
-	private static AccountTransactionsDto createResponse(Page<Transaction> transactions, List<AccountTransactionDto> accountTransactionDtos) {
-		AccountTransactionsDto response = new AccountTransactionsDto();
-		response.setTransactions(accountTransactionDtos);
-		response.setTotalAmount(transactions.getTotalElements() > 0 ?
-				transactions.getContent().stream().map(Transaction::getAmountInCzk).reduce(BigDecimal::add).get() :
-				BigDecimal.ZERO);
-		return response;
 	}
 
 	private Page<Transaction> getTransactions(int page, int size, String search, LocalDateTime from, LocalDateTime to, String category, String parsedSort, String parsedDirection)

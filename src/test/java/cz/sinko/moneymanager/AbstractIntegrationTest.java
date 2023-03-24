@@ -14,11 +14,14 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class AbstractIntegrationTest {
 
 	@Container
 	public static PostgreSQLContainer<?> pgsql = new PostgreSQLContainer<>("postgres:latest");
+	protected RequestSpecification requestSpecification;
+	@LocalServerPort
+	protected int localServerPort;
 
 	@DynamicPropertySource
 	static void configureTestContainersProperties(DynamicPropertyRegistry registry) {
@@ -26,11 +29,6 @@ public class AbstractIntegrationTest {
 		registry.add("spring.datasource.username", pgsql::getUsername);
 		registry.add("spring.datasource.password", pgsql::getPassword);
 	}
-
-	protected RequestSpecification requestSpecification;
-
-	@LocalServerPort
-	protected int localServerPort;
 
 	@BeforeEach
 	public void setUpAbstractIntegrationTest() {

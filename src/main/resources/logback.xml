@@ -24,7 +24,7 @@
 			<else>
 				<layout class="ch.qos.logback.classic.PatternLayout">
 					<Pattern>
-						%black(%d{ISO8601}) %highlight(%-5level) [%green(%X{traceId})] [%green(%X{spanId})] [%blue(%t)] %yellow(%C{1.}):
+						%black(%d{ISO8601}) %highlight(%-5level) [%green(%X{requestId})] [%blue(%t)] %yellow(%C):
 						%msg%n%throwable
 					</Pattern>
 				</layout>

@@ -9,13 +9,13 @@ public class ResourceNotFoundException extends Exception {
 	private final String resourceName;
 	private final String message;
 
-	public static ResourceNotFoundException createWith(String resourceName, String message) {
-		return new ResourceNotFoundException(resourceName, message);
-	}
-
 	private ResourceNotFoundException(String resourceName, String message) {
 		this.resourceName = resourceName;
 		this.message = message;
+	}
+
+	public static ResourceNotFoundException createWith(String resourceName, String message) {
+		return new ResourceNotFoundException(resourceName, message);
 	}
 
 	@Override

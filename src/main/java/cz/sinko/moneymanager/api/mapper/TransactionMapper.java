@@ -2,10 +2,8 @@ package cz.sinko.moneymanager.api.mapper;
 
 import java.util.List;
 
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 

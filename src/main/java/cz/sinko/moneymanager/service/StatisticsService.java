@@ -34,13 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 public class StatisticsService {
 
-	public IncomeExpenseStatementDto createIncomeExpenseStatement(List<Transaction> transactions) {
-		BigDecimal balance = calculateBalance(transactions);
-		BigDecimal income = calculateIncome(transactions);
-		BigDecimal expense = calculateExpense(transactions);
-		return new IncomeExpenseStatementDto(balance, income, expense);
-	}
-
 	public static SpendingCategoriesDto calculateCategoriesStatistics(Map<Category, List<Transaction>> transactionsByCategories) {
 		SpendingCategoriesDto response = new SpendingCategoriesDto();
 		List<CategoryStatisticsDto> categoryDtos = transactionsByCategories.entrySet().stream().map(entry -> {
@@ -72,6 +65,34 @@ public class StatisticsService {
 		calculatePercentage(categoryDtos);
 		response.setCategories(categoryDtos.stream().sorted(Comparator.comparing(CategoryStatisticsDto::getAmount)).collect(Collectors.toList()));
 		return response;
+	}
+
+	private static BigDecimal calculateExpense(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
+				amountInCzk.compareTo(BigDecimal.ZERO)
+						< 0).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	private static BigDecimal calculateIncome(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
+				amountInCzk.compareTo(BigDecimal.ZERO)
+						> 0).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	private static BigDecimal calculateBalance(List<Transaction> transactions) {
+		return transactions.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	private static void calculatePercentage(List<CategoryStatisticsDto> categories) {
+		BigDecimal totalAmount = categories.stream().map(CategoryStatisticsDto::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add).abs();
+		categories.forEach(category -> category.setPercentage(category.getAmount().abs().multiply(BigDecimal.valueOf(100)).divide(totalAmount, RoundingMode.HALF_UP)));
+	}
+
+	public IncomeExpenseStatementDto createIncomeExpenseStatement(List<Transaction> transactions) {
+		BigDecimal balance = calculateBalance(transactions);
+		BigDecimal income = calculateIncome(transactions);
+		BigDecimal expense = calculateExpense(transactions);
+		return new IncomeExpenseStatementDto(balance, income, expense);
 	}
 
 	public List<PeriodCategoryStatisticsDto> createYearlyCategoryStatistics(List<Transaction> transactions) {
@@ -167,27 +188,6 @@ public class StatisticsService {
 		});
 		response.sort(Comparator.comparing(PeriodCategoryStatisticsDto::getTotalAmount));
 		return response;
-	}
-
-	private static BigDecimal calculateExpense(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
-				amountInCzk.compareTo(BigDecimal.ZERO)
-						< 0).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	private static BigDecimal calculateIncome(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).filter(amountInCzk ->
-				amountInCzk.compareTo(BigDecimal.ZERO)
-						> 0).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	private static BigDecimal calculateBalance(List<Transaction> transactions) {
-		return transactions.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	private static void calculatePercentage(List<CategoryStatisticsDto> categories) {
-		BigDecimal totalAmount = categories.stream().map(CategoryStatisticsDto::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add).abs();
-		categories.forEach(category -> category.setPercentage(category.getAmount().abs().multiply(BigDecimal.valueOf(100)).divide(totalAmount, RoundingMode.HALF_UP)));
 	}
 
 }
