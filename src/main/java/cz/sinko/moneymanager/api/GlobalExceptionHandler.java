@@ -7,9 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -35,6 +38,8 @@ public class GlobalExceptionHandler {
 			ResourceNotFoundException.class,
 			RequestValidationException.class,
 			ConstraintViolationException.class,
+			MethodArgumentNotValidException.class,
+			DataIntegrityViolationException.class
 	})
 	@Nullable
 	public final ResponseEntity<ApiError> handleException(Exception ex, WebRequest request) {
@@ -56,7 +61,17 @@ public class GlobalExceptionHandler {
 			HttpStatus status = HttpStatus.BAD_REQUEST;
 			ConstraintViolationException exception = (ConstraintViolationException) ex;
 
-			return handleConstraintViolation(exception, headers, status, request);
+			return handleConstraintViolationException(exception, headers, status, request);
+		} else if (ex instanceof MethodArgumentNotValidException) {
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			MethodArgumentNotValidException exception = (MethodArgumentNotValidException) ex;
+
+			return handleMethodArgumentNotValidException(exception, headers, status, request);
+		} else if (ex instanceof DataIntegrityViolationException) {
+			HttpStatus status = HttpStatus.BAD_REQUEST;
+			DataIntegrityViolationException exception = (DataIntegrityViolationException) ex;
+
+			return handleDataIntegrityViolationException(exception, headers, status, request);
 		} else {
 			if (log.isWarnEnabled()) {
 				log.warn("Unknown exception type: " + ex.getClass().getName());
@@ -87,7 +102,7 @@ public class GlobalExceptionHandler {
 		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
 	}
 
-	protected ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex,
+	protected ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException ex,
 			HttpHeaders headers, HttpStatus status,
 			WebRequest request) {
 		List<String> errorMessages = new ArrayList<>();
@@ -95,6 +110,21 @@ public class GlobalExceptionHandler {
 			errorMessages.add(violation.getPropertyPath() + ": " + violation.getMessage());
 		}
 
+		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
+	}
+
+	protected ResponseEntity<ApiError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		List<String> errorMessages = new ArrayList<>();
+		for (ObjectError objectError : ex.getAllErrors()) {
+			errorMessages.add(objectError.getDefaultMessage());
+		}
+		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
+	}
+
+	private ResponseEntity<ApiError> handleDataIntegrityViolationException(DataIntegrityViolationException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		List<String> errorMessages = new ArrayList<>();
 		return handleExceptionInternal(ex, new ApiError(errorMessages), headers, status, request);
 	}
 

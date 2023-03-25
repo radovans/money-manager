@@ -29,7 +29,7 @@ public class AccountFacade {
 		return AccountMapper.t().mapAccount(accountService.createAccount(accountDto));
 	}
 
-	public void deleteAccount(Long id) {
+	public void deleteAccount(Long id) throws ResourceNotFoundException {
 		accountService.deleteAccount(id);
 	}
 

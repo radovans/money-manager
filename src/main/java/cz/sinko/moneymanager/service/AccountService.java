@@ -39,7 +39,9 @@ public class AccountService {
 		return accountRepository.save(account);
 	}
 
-	public void deleteAccount(Long id) {
+	public void deleteAccount(Long id) throws ResourceNotFoundException {
+		if (!accountRepository.existsById(id))
+			throw ResourceNotFoundException.createWith("Account", " with id '" + id + "' was not found");
 		accountRepository.deleteById(id);
 	}
 

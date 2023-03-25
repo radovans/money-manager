@@ -1,9 +1,11 @@
 package cz.sinko.moneymanager.api.dto;
 
 import cz.sinko.moneymanager.repository.model.RuleType;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder(toBuilder = true)
 public class RuleDto {
 
 	private Long id;
