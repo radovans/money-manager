@@ -30,6 +30,9 @@
 		<maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<springdoc-openapi.version>2.0.4</springdoc-openapi.version>
+		<gatling.version>3.9.0</gatling.version>
+		<gatling-maven-plugin.version>4.2.9</gatling-maven-plugin.version>
+		<faker.version>1.0.2</faker.version>
 	</properties>
 	<dependencies>
 		<!--		tracid and spanid-->
@@ -170,6 +173,25 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!--		Performance testing - Load Test -->
+		<dependency>
+			<groupId>io.gatling</groupId>
+			<artifactId>gatling-app</artifactId>
+			<version>${gatling.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.gatling.highcharts</groupId>
+			<artifactId>gatling-charts-highcharts</artifactId>
+			<version>${gatling.version}</version>
+		</dependency>
+
+		<!--		Generating fake data - Load Test -->
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>${faker.version}</version>
+		</dependency>
+
 
 	</dependencies>
 	<dependencyManagement>
@@ -228,6 +250,14 @@
 							<version>${lombok-mapstruct-binding.version}</version>
 						</path>
 					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>io.gatling</groupId>
+				<artifactId>gatling-maven-plugin</artifactId>
+				<version>${gatling-maven-plugin.version}</version>
+				<configuration>
+					<simulationClass>cz.sinko.moneymanager.LoadTest</simulationClass>
 				</configuration>
 			</plugin>
 		</plugins>

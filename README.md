@@ -17,6 +17,10 @@ Main features:
   - needs https://github.com/zalando/logbook spring boot 3 update
 - You can switch between classic and Json output of the log by feature flag - feature.toggles.logging.output.json=true
 - Swagger documentation
+- Integration tests using Testcontainers
+- Performance tests using Gatlin
+  - To run performance tests, firstly start application and then run 'mvn gatling:test'
+  - Check HTML report in the target/gatling directory
 
 TODO backlog:
 DASHBOARD:
