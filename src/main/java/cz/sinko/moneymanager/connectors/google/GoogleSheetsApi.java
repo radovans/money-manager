@@ -5,9 +5,9 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 
 @HttpExchange("/spreadsheets")
-public interface GoogleSheetService {
+public interface GoogleSheetsApi {
 
 	@GetExchange("/{spreadsheetId}/values/{range}?key={key}")
-	Spreadsheet getSpreadsheetData(@PathVariable("spreadsheetId") String spreadsheetId,
-			@PathVariable("range") String range, @PathVariable("key") String key);
+	Spreadsheet getSpreadsheetData(@PathVariable("key") String key, @PathVariable("spreadsheetId") String spreadsheetId,
+			@PathVariable("range") String range);
 }

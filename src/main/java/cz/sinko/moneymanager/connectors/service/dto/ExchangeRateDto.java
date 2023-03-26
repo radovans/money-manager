@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.connectors.dto;
+package cz.sinko.moneymanager.connectors.service.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

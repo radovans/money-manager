@@ -91,6 +91,7 @@ public class MoneyManagerApplication {
 		SpringApplication.run(MoneyManagerApplication.class, args);
 		log.info("Application: http://localhost:8088/actuator/health");
 		log.info("Swagger doc: http://localhost:8088/swagger");
+		log.info("Redis Insight: http://localhost:8001/");
 	}
 
 	private static ConfigurationJson openConfiguration() {

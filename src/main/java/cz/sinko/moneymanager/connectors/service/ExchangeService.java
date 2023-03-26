@@ -1,9 +1,10 @@
 package cz.sinko.moneymanager.connectors.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import cz.sinko.moneymanager.connectors.dto.ExchangeRateDto;
+import cz.sinko.moneymanager.connectors.service.dto.ExchangeRateDto;
 
 public interface ExchangeService {
 
@@ -11,6 +12,6 @@ public interface ExchangeService {
 
 	ExchangeRateDto getExchangeRate(LocalDate date);
 
-	Double convertEurToCzk(Double eur);
+	BigDecimal convertEurToCzk(LocalDate date, BigDecimal eur);
 
 }

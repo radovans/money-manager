@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,8 @@ import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
 import cz.sinko.moneymanager.api.dto.RecipientStatisticsDto;
 import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
 import cz.sinko.moneymanager.api.dto.StatisticsDto;
+import cz.sinko.moneymanager.connectors.service.ExchangeService;
+import cz.sinko.moneymanager.connectors.service.dto.ExchangeRateDto;
 import cz.sinko.moneymanager.facade.StatisticsFacade;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -48,6 +51,23 @@ public class StatisticsController {
 	private final TransactionService transactionService;
 
 	private final StatisticsService statisticsService;
+
+	private final ExchangeService exchangeService;
+
+	@GetMapping("exchange-rates")
+	public List<ExchangeRateDto> getExchangeRates() {
+		return exchangeService.getExchangeRates();
+	}
+
+	@GetMapping("exchange-rates/{date}")
+	public ExchangeRateDto getExchangeRates(@PathVariable LocalDate date) {
+		return exchangeService.getExchangeRate(date);
+	}
+
+	@GetMapping("exchange-rates/convert/{date}/{eur}")
+	public BigDecimal convertEur(@PathVariable LocalDate date, @PathVariable BigDecimal eur) {
+		return exchangeService.convertEurToCzk(date, eur);
+	}
 
 	@GetMapping("/categories/yearly")
 	public List<PeriodCategoryStatisticsDto> getYearlyCategoryStatistics() {

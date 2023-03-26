@@ -11,16 +11,22 @@ Run docker container with postgres database:
 docker run -d -p 5432:5432 --name moneymng --restart always -e POSTGRES_USER=moneymng -e POSTGRES_PASSWORD=moneymng -e
 POSTGRES_DB=moneymng -v moneymng_postgres_data:/var/lib/postgresql/data postgres
 
+Run docker container with Redis and Redis Insight:
+docker run -d -p 6378:6379 -p 8001:8001 --name redis-stack --restart always redis/redis-stack:latest
+
+
 Main features:
-- Each request has its own request id which is propagated into logs and response header
-- Each request is logged with whole request and response
+- Each request has its own request id which is propagated into logs, async tasks and response headers
+- Each request is logged with whole request and response using Logbook
   - needs https://github.com/zalando/logbook spring boot 3 update
-- You can switch between classic and Json output of the log by feature flag - feature.toggles.logging.output.json=true
+- Switch between classic and Json output of the log by feature flag - feature.toggles.logging.output.json=true
 - Swagger documentation
-- Integration tests using Testcontainers
+- Integration tests using Testcontainers and Rest-assured
 - Performance tests using Gatlin
   - To run performance tests, firstly start application and then run 'mvn gatling:test'
   - Check HTML report in the target/gatling directory
+- Integration with Google Sheets API via http interface
+- Caching data using Redis - asynchronous saving
 
 TODO backlog:
 DASHBOARD:
