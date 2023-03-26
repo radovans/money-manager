@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RecurrentTransactionController {
 
+	// TODO create and call facade
 	private final RecurrentTransactionRepository recurrentTransactionRepository;
 
 	@GetMapping

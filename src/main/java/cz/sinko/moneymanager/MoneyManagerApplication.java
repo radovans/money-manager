@@ -228,7 +228,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-				.limit(10)
+//				.limit(10)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import cz.sinko.moneymanager.api.dto.RuleDto;
@@ -25,4 +26,9 @@ public interface RuleMapper {
 	@Mapping(target = "subcategory", ignore = true)
 	@Mapping(target = "category", ignore = true)
 	Rule map(RuleDto source);
+
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "subcategory", ignore = true)
+	@Mapping(target = "category", ignore = true)
+	void update(@MappingTarget Rule entity, RuleDto updateEntity);
 }

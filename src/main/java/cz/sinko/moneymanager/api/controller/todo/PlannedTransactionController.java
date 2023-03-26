@@ -27,6 +27,7 @@ public class PlannedTransactionController {
 
 	private static final String PLANNED_TRANSACTIONS_CSV_FILENAME = "planned-transactions.csv";
 
+	// TODO create and call facade
 	private final PlannedTransactionRepository plannedTransactionRepository;
 
 	@GetMapping

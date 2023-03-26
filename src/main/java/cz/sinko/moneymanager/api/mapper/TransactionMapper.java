@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 
@@ -27,6 +28,12 @@ public interface TransactionMapper {
 	@Mapping(target = "category", ignore = true)
 	@Mapping(target = "account", ignore = true)
 	Transaction map(TransactionDto source);
+
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "subcategory", ignore = true)
+	@Mapping(target = "category", ignore = true)
+	@Mapping(target = "account", ignore = true)
+	void update(@MappingTarget Transaction entity, TransactionDto updateEntity);
 
 	@Mapping(target = "account", source = "account.name")
 	@Mapping(target = "subcategory", source = "subcategory.name")

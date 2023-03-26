@@ -85,8 +85,7 @@ public class TransactionService {
 		transactionRepository.save(transaction);
 	}
 
-	public Transaction createTransaction(TransactionDto transactionDto, Category category, Subcategory subcategory, Account account)
-			throws ResourceNotFoundException {
+	public Transaction createTransaction(TransactionDto transactionDto, Category category, Subcategory subcategory, Account account) {
 		Transaction transaction = TransactionMapper.t().map(transactionDto);
 		if (category != null) {
 			transaction.setCategory(category);
@@ -107,16 +106,10 @@ public class TransactionService {
 	public Transaction updateTransaction(Long id, TransactionDto transactionDto, Category category, Subcategory subcategory, Account account)
 			throws ResourceNotFoundException {
 		Transaction transaction = find(id);
-		transaction.setDate(transactionDto.getDate());
-		transaction.setRecipient(transactionDto.getRecipient());
-		transaction.setNote(transactionDto.getNote());
-		transaction.setAmount(transactionDto.getAmount());
-		transaction.setAmountInCzk(transactionDto.getAmountInCzk());
-		transaction.setCurrency(transactionDto.getCurrency());
+		TransactionMapper.t().update(transaction, transactionDto);
 		transaction.setCategory(category);
 		transaction.setSubcategory(subcategory);
 		transaction.setAccount(account);
-		transaction.setLabel(transactionDto.getLabel());
 		return transactionRepository.save(transaction);
 	}
 

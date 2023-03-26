@@ -1,4 +1,4 @@
-package cz.sinko.moneymanager.api.controller.todo;
+package cz.sinko.moneymanager.api.controller;
 
 import java.util.List;
 

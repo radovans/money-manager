@@ -46,6 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StatisticsController {
 
+	// TODO call only facade, not services
 	private final StatisticsFacade statisticsFacade;
 
 	private final TransactionService transactionService;
@@ -54,17 +55,17 @@ public class StatisticsController {
 
 	private final ExchangeService exchangeService;
 
-	@GetMapping("exchange-rates")
+	@GetMapping("/exchange-rates")
 	public List<ExchangeRateDto> getExchangeRates() {
 		return exchangeService.getExchangeRates();
 	}
 
-	@GetMapping("exchange-rates/{date}")
+	@GetMapping("/exchange-rates/{date}")
 	public ExchangeRateDto getExchangeRates(@PathVariable LocalDate date) {
 		return exchangeService.getExchangeRate(date);
 	}
 
-	@GetMapping("exchange-rates/convert/{date}/{eur}")
+	@GetMapping("/exchange-rates/convert/{date}/{eur}")
 	public BigDecimal convertEur(@PathVariable LocalDate date, @PathVariable BigDecimal eur) {
 		return exchangeService.convertEurToCzk(date, eur);
 	}

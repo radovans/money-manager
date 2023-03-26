@@ -56,11 +56,7 @@ public class RuleService {
 	public Rule updateRule(Long id, RuleDto ruleDto, Category category, Subcategory subcategory)
 			throws ResourceNotFoundException {
 		Rule rule = find(id);
-		rule.setType(ruleDto.getType());
-		rule.setKey(ruleDto.getKey());
-		rule.setSkipTransaction(ruleDto.isSkipTransaction());
-		rule.setRecipient(ruleDto.getRecipient());
-		rule.setNote(ruleDto.getNote());
+		RuleMapper.t().update(rule, ruleDto);
 		if (!ruleDto.isSkipTransaction()) {
 			if (category != null) {
 				rule.setCategory(category);
@@ -72,7 +68,6 @@ public class RuleService {
 			rule.setSubcategory(null);
 			rule.setCategory(null);
 		}
-		rule.setLabel(ruleDto.getLabel());
 		return ruleRepository.save(rule);
 	}
 
