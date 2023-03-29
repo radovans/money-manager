@@ -9,6 +9,7 @@ import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,10 @@ public class StatisticsController {
 		return exchangeService.getExchangeRate(date);
 	}
 
-	@GetMapping("/exchange-rates/convert/{date}/{eur}")
-	public BigDecimal convertEur(@PathVariable LocalDate date, @PathVariable BigDecimal eur) {
-		return exchangeService.convertEurToCzk(date, eur);
+	@GetMapping("/exchange-rates/convert/{date}/{currency}/{amount}")
+	public BigDecimal convertCurrency(@PathVariable LocalDate date, @PathVariable String currency,
+			@PathVariable BigDecimal amount) {
+		return exchangeService.convertCurrencyToCzk(Currency.getInstance(currency), date, amount);
 	}
 
 	@GetMapping("/categories/yearly")

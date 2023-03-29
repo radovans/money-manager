@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  money-manager-postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: moneymng
+      POSTGRES_PASSWORD: moneymng
+      POSTGRES_DB: moneymng
+    ports:
+      - 5432:5432
+    hostname: moneymng
+    volumes:
+      - money_manager_postgres_data:/var/lib/postgresql/data
+
+  money-manager-redis-stack:
+    image: redis/redis-stack:latest
+    restart: always
+    ports:
+      - 6378:6379
+      - 8001:8001
+
+  money-manager-backend:
+    image: money-manager-java
+    restart: always
+    environment:
+      - "JAVA_OPTS=-Dspring.datasource.url=jdbc:postgresql://moneymng:5432/moneymng 
+                  -Dspring.datasource.username=moneymng 
+                  -Dspring.datasource.password=moneymng"
+    ports:
+      - 8088:8088
+
+  money-manager-frontend:
+    image: money-manager-react
+    restart: always
+    ports:
+      - 3000:3000
+
+volumes:
+  money_manager_postgres_data:

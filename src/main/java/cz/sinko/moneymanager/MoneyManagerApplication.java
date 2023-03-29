@@ -1,12 +1,5 @@
 package cz.sinko.moneymanager;
 
-import static java.util.Collections.singleton;
-import static org.zalando.logbook.BodyFilter.merge;
-import static org.zalando.logbook.BodyFilters.defaultValue;
-import static org.zalando.logbook.Conditions.exclude;
-import static org.zalando.logbook.Conditions.requestTo;
-import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,11 +14,6 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.json.JsonHttpLogFormatter;
-import org.zalando.logbook.logstash.LogstashLogbackSink;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,10 +52,12 @@ import lombok.extern.slf4j.Slf4j;
 public class MoneyManagerApplication {
 
 	public static final Gson GSON = new GsonBuilder().create();
-	//		public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
-	//		public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
-	public static final String IMPORT_CSV_FILE = ".\\src\\main\\resources\\transactions - example.csv";
-	public static final String CONFIGURATION_JSON = ".\\src\\main\\resources\\configuration-example.json";
+	//			public static final String IMPORT_CSV_FILE = "C:\\Users\\radovan.sinko\\Downloads\\transactions.csv";
+	//			public static final String CONFIGURATION_JSON = "C:\\Users\\radovan.sinko\\Downloads\\configuration.json";
+	public static final String IMPORT_CSV_FILE = MoneyManagerApplication.class.getClassLoader().getResource(
+			"transactions-example.csv").getPath();
+	public static final String CONFIGURATION_JSON = MoneyManagerApplication.class.getClassLoader()
+			.getResource("configuration-example.json").getPath();
 
 	private AccountRepository accountRepository;
 
@@ -89,9 +79,10 @@ public class MoneyManagerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MoneyManagerApplication.class, args);
-		log.info("Application: http://localhost:8088/actuator/health");
+		log.info("API health check: http://localhost:8088/actuator/health");
 		log.info("Swagger doc: http://localhost:8088/swagger");
 		log.info("Redis Insight: http://localhost:8001/");
+		log.info("React app: http://localhost:3000/");
 	}
 
 	private static ConfigurationJson openConfiguration() {
@@ -228,7 +219,7 @@ public class MoneyManagerApplication {
 		List<String[]> failedRows = new ArrayList<>();
 		transactions.stream()
 				.skip(1)
-//				.limit(10)
+				//				.limit(10)
 				.forEach(transaction -> {
 					try {
 						Transaction transactionEntity = new Transaction();
@@ -251,26 +242,6 @@ public class MoneyManagerApplication {
 		if (!failedRows.isEmpty()) {
 			failedRows.forEach(row -> log.error("Failed to save transaction '{}'", row));
 		}
-	}
-
-	@Bean
-	public Logbook logbook() {
-		HttpLogFormatter formatter = new JsonHttpLogFormatter();
-		LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
-
-		return Logbook.builder()
-				.sink(sink)
-				.condition(exclude(
-						requestTo("/actuator"),
-						requestTo("/actuator/*"),
-						requestTo("/v3/api-docs"),
-						requestTo("/swagger-ui.html"),
-						requestTo("/swagger-resources"),
-						requestTo("/csrf"),
-						requestTo("/webjars/springfox-swagger-ui")))
-//				.bodyFilter(merge(defaultValue(),
-//						replaceJsonStringProperty(singleton("password"), "hidden-value")))
-				.build();
 	}
 
 }

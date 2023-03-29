@@ -3,11 +3,11 @@ package cz.sinko.moneymanager.facade;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
@@ -16,6 +16,7 @@ import cz.sinko.moneymanager.api.dto.AccountTransactionsDto;
 import cz.sinko.moneymanager.api.dto.SortTransactionFields;
 import cz.sinko.moneymanager.api.dto.TransactionDto;
 import cz.sinko.moneymanager.api.mapper.TransactionMapper;
+import cz.sinko.moneymanager.connectors.service.ExchangeService;
 import cz.sinko.moneymanager.repository.model.Account;
 import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.repository.model.Subcategory;
@@ -39,6 +40,8 @@ public class TransactionFacade {
 	private final SubcategoryService subcategoryService;
 
 	private final AccountService accountService;
+
+	private final ExchangeService exchangeService;
 
 	private static AccountTransactionsDto createResponse(Page<Transaction> transactions, List<AccountTransactionDto> accountTransactionDtos) {
 		AccountTransactionsDto response = new AccountTransactionsDto();
@@ -66,12 +69,12 @@ public class TransactionFacade {
 		Category category = categoryService.find(transactionDto.getCategory());
 		Subcategory subcategory = subcategoryService.find(transactionDto.getSubcategory());
 		Account account = accountService.find(transactionDto.getAccount());
+		convertCurrency(transactionDto);
 		return TransactionMapper.t().map(transactionService.createTransaction(transactionDto, category, subcategory, account));
 	}
 
-	public ResponseEntity<?> deleteTransaction(Long id) {
+	public void deleteTransaction(Long id) {
 		transactionService.deleteTransaction(id);
-		return ResponseEntity.ok().build();
 	}
 
 	public TransactionDto updateTransaction(Long id, TransactionDto transactionDto)
@@ -79,6 +82,7 @@ public class TransactionFacade {
 		Category category = categoryService.find(transactionDto.getCategory());
 		Subcategory subcategory = subcategoryService.find(transactionDto.getSubcategory());
 		Account account = accountService.find(transactionDto.getAccount());
+		convertCurrency(transactionDto);
 		return TransactionMapper.t().map(transactionService.updateTransaction(id, transactionDto, category, subcategory, account));
 	}
 
@@ -112,4 +116,16 @@ public class TransactionFacade {
 			return SortTransactionFields.id.name();
 		}
 	}
+
+	private void convertCurrency(TransactionDto transactionDto) {
+		if (transactionDto.getCurrency() != null && transactionDto.getAmount() != null) {
+			BigDecimal convertedEurToCzk =
+					exchangeService.convertCurrencyToCzk(
+							Currency.getInstance(transactionDto.getCurrency()),
+							transactionDto.getDate(),
+							transactionDto.getAmount());
+			transactionDto.setAmountInCzk(convertedEurToCzk);
+		}
+	}
+
 }

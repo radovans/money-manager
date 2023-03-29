@@ -3,6 +3,7 @@ package cz.sinko.moneymanager.connectors.google;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,10 +63,13 @@ public class GoogleSheetsServiceImpl implements ExchangeService {
 	}
 
 	@Override
-	public BigDecimal convertEurToCzk(LocalDate date, BigDecimal eur) {
+	public BigDecimal convertCurrencyToCzk(Currency currency, LocalDate date, BigDecimal amount) {
 		ExchangeRateDto exchangeRate = getExchangeRate(date);
-		BigDecimal eurExchangeRate = exchangeRate.getEurExchangeRate();
-		return eurExchangeRate.multiply(eur);
+		return switch (currency.getCurrencyCode()) {
+			case "CZK" -> amount;
+			case "EUR" -> exchangeRate.getEurExchangeRate().multiply(amount);
+			default -> throw new IllegalArgumentException("Currency " + currency + " is not supported");
+		};
 	}
 
 	private void saveIndividualExchangeRates(List<ExchangeRateDto> exchangeRates) {
