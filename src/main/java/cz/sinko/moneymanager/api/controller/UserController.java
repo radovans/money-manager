@@ -22,7 +22,7 @@ public class UserController {
 	}
 
 	@Data
-	private class AccountDto {
+	private static class AccountDto {
 		private String name = "Radovan";
 		private String occupation = "Finance Minister";
 		private String profileImageUrl = "https://media.licdn.com/dms/image/C4D03AQH4txEmGxo7nQ/profile-displayphoto-shrink_800_800/0/1610319630964?e=1683158400&v=beta&t=tTDZJeFOtvr95WADSBob89elA3T9ryKuPEcCaZmp23U";

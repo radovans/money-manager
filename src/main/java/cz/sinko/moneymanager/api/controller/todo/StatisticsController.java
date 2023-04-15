@@ -1,35 +1,7 @@
 package cz.sinko.moneymanager.api.controller.todo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.OffsetDateTime;
-import java.time.Year;
-import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
-import cz.sinko.moneymanager.api.dto.IncomeExpenseStatementDto;
-import cz.sinko.moneymanager.api.dto.LabelStatisticsDto;
-import cz.sinko.moneymanager.api.dto.MonthStatisticDto;
-import cz.sinko.moneymanager.api.dto.PeriodCategoryStatisticsDto;
-import cz.sinko.moneymanager.api.dto.RecipientStatisticsDto;
-import cz.sinko.moneymanager.api.dto.SpendingCategoriesDto;
-import cz.sinko.moneymanager.api.dto.StatisticsDto;
+import cz.sinko.moneymanager.api.dto.*;
 import cz.sinko.moneymanager.connectors.service.ExchangeService;
 import cz.sinko.moneymanager.connectors.service.dto.ExchangeRateDto;
 import cz.sinko.moneymanager.facade.StatisticsFacade;
@@ -40,6 +12,14 @@ import cz.sinko.moneymanager.service.StatisticsService;
 import cz.sinko.moneymanager.service.TransactionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/statistics")
@@ -57,59 +37,59 @@ public class StatisticsController {
 	private final ExchangeService exchangeService;
 
 	@GetMapping("/exchange-rates")
-	public List<ExchangeRateDto> getExchangeRates() {
-		return exchangeService.getExchangeRates();
+	public ResponseEntity<List<ExchangeRateDto>> getExchangeRates() {
+		return ResponseEntity.ok().body(exchangeService.getExchangeRates());
 	}
 
 	@GetMapping("/exchange-rates/{date}")
-	public ExchangeRateDto getExchangeRates(@PathVariable LocalDate date) {
-		return exchangeService.getExchangeRate(date);
+	public ResponseEntity<ExchangeRateDto> getExchangeRates(@PathVariable LocalDate date) {
+		return ResponseEntity.ok().body(exchangeService.getExchangeRate(date));
 	}
 
 	@GetMapping("/exchange-rates/convert/{date}/{currency}/{amount}")
-	public BigDecimal convertCurrency(@PathVariable LocalDate date, @PathVariable String currency,
-			@PathVariable BigDecimal amount) {
-		return exchangeService.convertCurrencyToCzk(Currency.getInstance(currency), date, amount);
+	public ResponseEntity<BigDecimal> convertCurrency(@PathVariable LocalDate date, @PathVariable String currency,
+													  @PathVariable BigDecimal amount) {
+		return ResponseEntity.ok().body(exchangeService.convertCurrencyToCzk(Currency.getInstance(currency), date, amount));
 	}
 
 	@GetMapping("/categories/yearly")
-	public List<PeriodCategoryStatisticsDto> getYearlyCategoryStatistics() {
-		return statisticsFacade.getYearlyCategoryStatistics();
+	public ResponseEntity<List<PeriodCategoryStatisticsDto>> getYearlyCategoryStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getYearlyCategoryStatistics());
 	}
 
 	@GetMapping("/categories/monthly")
-	public List<PeriodCategoryStatisticsDto> getMonthlyCategoryStatistics() {
-		return statisticsFacade.getMonthlyCategoryStatistics();
+	public ResponseEntity<List<PeriodCategoryStatisticsDto>> getMonthlyCategoryStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getMonthlyCategoryStatistics());
 	}
 
 	@GetMapping("/subcategories/yearly")
-	public List<PeriodCategoryStatisticsDto> getYearlySubcategoryStatistics() {
-		return statisticsFacade.getYearlySubcategoryStatistics();
+	public ResponseEntity<List<PeriodCategoryStatisticsDto>> getYearlySubcategoryStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getYearlySubcategoryStatistics());
 	}
 
 	@GetMapping("/subcategories/monthly")
-	public List<PeriodCategoryStatisticsDto> getMonthlySubcategoryStatistics() {
-		return statisticsFacade.getMonthlySubcategoryStatistics();
+	public ResponseEntity<List<PeriodCategoryStatisticsDto>> getMonthlySubcategoryStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getMonthlySubcategoryStatistics());
 	}
 
 	@GetMapping("/recipients/yearly")
-	public List<RecipientStatisticsDto> getYearlyRecipientStatistics() {
-		return statisticsFacade.getYearlyRecipientStatistics();
+	public ResponseEntity<List<RecipientStatisticsDto>> getYearlyRecipientStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getYearlyRecipientStatistics());
 	}
 
 	@GetMapping("/recipients/monthly")
-	public List<RecipientStatisticsDto> getMonthlyRecipientStatistics() {
-		return statisticsFacade.getMonthlyRecipientStatistics();
+	public ResponseEntity<List<RecipientStatisticsDto>> getMonthlyRecipientStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getMonthlyRecipientStatistics());
 	}
 
 	@GetMapping("/labels")
-	public List<LabelStatisticsDto> getLabelStatistics() {
-		return statisticsFacade.getLabelStatistics();
+	public ResponseEntity<List<LabelStatisticsDto>> getLabelStatistics() {
+		return ResponseEntity.ok().body(statisticsFacade.getLabelStatistics());
 	}
 
 	// TODO clean up controller and move logic to service
 	@GetMapping
-	public StatisticsDto getStatistics() {
+	public ResponseEntity<StatisticsDto> getStatistics() {
 		List<Transaction> transactions = transactionService.find();
 		IncomeExpenseStatementDto incomeExpenseStatementDto = statisticsService.createIncomeExpenseStatement(transactions);
 
@@ -120,12 +100,12 @@ public class StatisticsController {
 		List<Transaction> yearToDateTransactions = transactionService.filterTransactionsByYear(transactions, Year.now().getValue());
 		IncomeExpenseStatementDto yearToDateIncomeExpenseStatementDto = statisticsService.createIncomeExpenseStatement(yearToDateTransactions);
 
-		return new StatisticsDto(incomeExpenseStatementDto, lastYearIncomeExpenseStatementDto, yearToDateIncomeExpenseStatementDto);
+		return ResponseEntity.ok().body(new StatisticsDto(incomeExpenseStatementDto, lastYearIncomeExpenseStatementDto, yearToDateIncomeExpenseStatementDto));
 	}
 
 	// TODO clean up controller and move logic to service
 	@GetMapping("/categories")
-	public SpendingCategoriesDto getSpendingCategoriesStatistics(
+	public ResponseEntity<SpendingCategoriesDto> getSpendingCategoriesStatistics(
 			@RequestParam(defaultValue = "2020-01-01T00:00:00.000Z") String from,
 			@RequestParam(defaultValue = "2023-12-31T23:59:59.999Z") String to,
 			@RequestParam(required = false) String category)
@@ -133,17 +113,17 @@ public class StatisticsController {
 		if (category == null) {
 			List<Transaction> transactions = transactionService.find(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)));
 			Map<Category, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getCategory));
-			return StatisticsService.calculateCategoriesStatistics(transactionsByCategories);
+			return ResponseEntity.ok().body(StatisticsService.calculateCategoriesStatistics(transactionsByCategories));
 		} else {
 			List<Transaction> transactions = transactionService.find(LocalDate.from(OffsetDateTime.parse(from)), LocalDate.from(OffsetDateTime.parse(to)), category);
 			Map<Subcategory, List<Transaction>> transactionsBySubcategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getSubcategory));
-			return StatisticsService.calculateSubcategoriesStatistics(transactionsBySubcategories);
+			return ResponseEntity.ok().body(StatisticsService.calculateSubcategoriesStatistics(transactionsBySubcategories));
 		}
 	}
 
 	// TODO clean up controller and move logic to service
 	@GetMapping("/year-month/all")
-	public List<MonthStatisticDto> getYearMonthStatistics(
+	public ResponseEntity<List<MonthStatisticDto>> getYearMonthStatistics(
 			@RequestParam(defaultValue = "2020-01") String from,
 			@RequestParam(defaultValue = "2023-12") String to) {
 		List<Transaction> transactions = transactionService.find(YearMonth.parse(from), YearMonth.parse(to));
@@ -162,12 +142,12 @@ public class StatisticsController {
 				.filter(monthStatistic -> monthStatistic.getMonth().isBefore(monthStatisticDto.getMonth()))
 				.map(MonthStatisticDto::getBalance)
 				.reduce(BigDecimal.ZERO, BigDecimal::add).add(monthStatisticDto.getBalance())));
-		return response;
+		return ResponseEntity.ok().body(response);
 	}
 
 	// TODO clean up controller and move logic to service, separate to smaller methods
 	@GetMapping("/year-month/year")
-	public Map<String, List<MonthStatisticDto>> getYearMonthStatisticsByYear(
+	public ResponseEntity<Map<String, List<MonthStatisticDto>>> getYearMonthStatisticsByYear(
 			@RequestParam(defaultValue = "2020-01") String from,
 			@RequestParam(defaultValue = "2023-12") String to,
 			@RequestParam(defaultValue = "false") boolean salaryOnly)
@@ -215,7 +195,7 @@ public class StatisticsController {
 		});
 		monthStatistics.sort(Comparator.comparing(MonthStatisticDto::getMonth));
 		response.put("xAverage", monthStatistics);
-		return response;
+		return ResponseEntity.ok().body(response);
 	}
 
 }

@@ -1,11 +1,5 @@
 package cz.sinko.moneymanager.facade;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Component;
-
 import cz.sinko.moneymanager.api.ResourceNotFoundException;
 import cz.sinko.moneymanager.api.dto.CategoryDto;
 import cz.sinko.moneymanager.api.mapper.CategoryMapper;
@@ -13,6 +7,10 @@ import cz.sinko.moneymanager.repository.model.Category;
 import cz.sinko.moneymanager.service.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -22,7 +20,7 @@ public class CategoryFacade {
 	private final CategoryService categoryService;
 
 	public List<CategoryDto> getCategories() {
-		return CategoryMapper.t().map(categoryService.find().stream().sorted(Comparator.comparing(Category::getName)).collect(Collectors.toList()));
+		return CategoryMapper.t().map(categoryService.find().stream().sorted(Comparator.comparing(Category::getName)).toList());
 	}
 
 	public CategoryDto createCategory(CategoryDto categoryDto) {

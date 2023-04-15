@@ -151,14 +151,46 @@ public class StatisticsService {
 		categories.forEach(category -> category.setPercentage(category.getAmount().abs().multiply(BigDecimal.valueOf(100)).divide(totalAmount, RoundingMode.HALF_UP)));
 	}
 
-	public List<LabelStatisticsDto> createLabelStatistics(List<Transaction> transactions) {
-		// TODO implementation
-		return null;
-	}
+    // TODO clean up, separate to smaller methods
+    public <P> List<RecipientStatisticsDto> createRecipientStatistics(List<Transaction> transactions, Function<Transaction, P> periodFunction) {
+        List<RecipientStatisticsDto> response = new ArrayList<>();
+        Set<P> allPeriods = new HashSet<>();
+        transactions.forEach(transaction -> allPeriods.add(periodFunction.apply(transaction)));
+        Map<Category, List<Transaction>> transactionsByCategories = transactions.stream().collect(Collectors.groupingBy(Transaction::getCategory));
+        transactionsByCategories.forEach((category, transactionsByCategory) -> {
+            RecipientStatisticsDto recipientStatisticsDto = new RecipientStatisticsDto();
+            recipientStatisticsDto.setCategory(category.getName());
+            recipientStatisticsDto.setTotalAmount(transactionsByCategory.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add));
+            Map<String, List<Transaction>> transactionsByRecipient = transactionsByCategory.stream().collect(Collectors.groupingBy(Transaction::getRecipient));
+            transactionsByRecipient.forEach((recipient, transactionsByRecipientCategory) -> {
+                RecipientStatisticDto recipientStatisticDto = new RecipientStatisticDto();
+                recipientStatisticDto.setRecipient(recipient);
+                Map<P, List<Transaction>> transactionsByPeriod = transactionsByRecipientCategory.stream().collect(Collectors.groupingBy(periodFunction));
+                allPeriods.forEach(period -> {
+                    PeriodCategoryStatisticDto periodCategoryStatisticDto = new PeriodCategoryStatisticDto();
+                    periodCategoryStatisticDto.setPeriod(period.toString());
+                    periodCategoryStatisticDto.setAmount(transactionsByPeriod.getOrDefault(period, new ArrayList<>()).stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add));
+                    recipientStatisticDto.addPeriodCategoryStatisticDto(periodCategoryStatisticDto);
+                });
+                recipientStatisticDto.getPeriodCategoryStatistics().sort(Comparator.comparing(PeriodCategoryStatisticDto::getPeriod));
+                PeriodCategoryStatisticDto periodCategoryStatisticDto = new PeriodCategoryStatisticDto();
+                periodCategoryStatisticDto.setPeriod("Total");
+                BigDecimal totalAmount = transactionsByRecipientCategory.stream().map(Transaction::getAmountInCzk).reduce(BigDecimal.ZERO, BigDecimal::add);
+                periodCategoryStatisticDto.setAmount(totalAmount);
+                recipientStatisticDto.addPeriodCategoryStatisticDto(periodCategoryStatisticDto);
+                recipientStatisticDto.setTotalAmount(totalAmount);
+                recipientStatisticsDto.addRecipientStatistics(recipientStatisticDto);
+            });
+            recipientStatisticsDto.getRecipientStatistics().sort(Comparator.comparing(RecipientStatisticDto::getTotalAmount));
+            response.add(recipientStatisticsDto);
+        });
+        response.sort(Comparator.comparing(RecipientStatisticsDto::getTotalAmount));
+        return response;
+    }
 
-	public <P> List<RecipientStatisticsDto> createRecipientStatistics(List<Transaction> transactions, Function<Transaction, P> periodFunction) {
-		// TODO implementation
-		return null;
-	}
+    public List<LabelStatisticsDto> createLabelStatistics(List<Transaction> transactions) {
+        // TODO implementation
+        return null;
+    }
 
 }

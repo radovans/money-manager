@@ -37,11 +37,11 @@ public class PlannedTransactionController {
 	}
 
 	@GetMapping(value = "/csv", produces = "text/csv")
-	public ResponseEntity<?> createPlannedTransactionsCsv() {
+	public ResponseEntity<InputStreamResource> createPlannedTransactionsCsv() {
 		return createCsvFile(PlannedTransactionMapper.t().mapToTransactionList(plannedTransactionRepository.findAll()), PLANNED_TRANSACTIONS_CSV_FILENAME);
 	}
 
-	private ResponseEntity<?> createCsvFile(List<Transaction> transactions, String csvFilename) {
+	private ResponseEntity<InputStreamResource> createCsvFile(List<Transaction> transactions, String csvFilename) {
 		InputStreamResource output = CsvUtil.createCsvOutput(transactions);
 		return ResponseEntity
 				.status(HttpStatus.OK)

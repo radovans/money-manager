@@ -100,8 +100,9 @@ class AccountControllerIT extends AbstractIntegrationTest {
 				.extract().body()
 				.jsonPath().getList(".", AccountDto.class);
 
-		assertThat(accounts).contains(createdCashAccount);
-		assertThat(accounts).contains(createdBankAccount);
+		assertThat(accounts)
+				.contains(createdCashAccount)
+				.contains(createdBankAccount);
 	}
 
 	//	NEGATIVE SCENARIOS

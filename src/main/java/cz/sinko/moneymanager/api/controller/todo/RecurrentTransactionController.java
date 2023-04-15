@@ -1,19 +1,5 @@
 package cz.sinko.moneymanager.api.controller.todo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Month;
-import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import cz.sinko.moneymanager.api.dto.RecurrentStatisticDto;
 import cz.sinko.moneymanager.api.dto.RecurrentTransactionDto;
 import cz.sinko.moneymanager.api.mapper.RecurrentTransactionMapper;
@@ -24,6 +10,20 @@ import cz.sinko.moneymanager.repository.model.Transaction;
 import cz.sinko.moneymanager.repository.model.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Month;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 // TODO clean up
 @RestController
@@ -36,13 +36,13 @@ public class RecurrentTransactionController {
 	private final RecurrentTransactionRepository recurrentTransactionRepository;
 
 	@GetMapping
-	public List<RecurrentTransactionDto> getRecurrentTransactions() {
+	public ResponseEntity<List<RecurrentTransactionDto>> getRecurrentTransactions() {
 		log.info("Finding all recurrent transactions.");
-		return RecurrentTransactionMapper.t().map(recurrentTransactionRepository.findAll());
+		return ResponseEntity.ok().body(RecurrentTransactionMapper.t().map(recurrentTransactionRepository.findAll()));
 	}
 
 	@GetMapping("/statistics")
-	public List<RecurrentStatisticDto> getRecurrentStatistics() {
+	public ResponseEntity<List<RecurrentStatisticDto>> getRecurrentStatistics() {
 		log.info("Calculating recurrent transactions statistics.");
 		List<RecurrentTransaction> yearlyRecurrentTransactions = recurrentTransactionRepository.findByFrequency(Frequency.YEARLY);
 		List<Transaction> transactions = new ArrayList<>();
@@ -102,7 +102,7 @@ public class RecurrentTransactionController {
 				.filter(monthStatistic -> monthStatistic.getMonth().isBefore(monthStatisticDto.getMonth()))
 				.map(RecurrentStatisticDto::getExpenses)
 				.reduce(BigDecimal.ZERO, BigDecimal::add).add(monthStatisticDto.getExpenses())));
-		return response;
+		return ResponseEntity.ok().body(response);
 	}
 
 }
