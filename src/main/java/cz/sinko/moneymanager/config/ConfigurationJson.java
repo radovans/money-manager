@@ -1,12 +1,12 @@
 package cz.sinko.moneymanager.config;
 
-import java.util.List;
-import java.util.Map;
-
 import cz.sinko.moneymanager.api.dto.PlannedTransactionDto;
 import cz.sinko.moneymanager.api.dto.RecurrentTransactionDto;
 import cz.sinko.moneymanager.api.dto.RuleDto;
 import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class ConfigurationJson {

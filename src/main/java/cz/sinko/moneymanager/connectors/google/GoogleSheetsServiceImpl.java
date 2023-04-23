@@ -65,6 +65,9 @@ public class GoogleSheetsServiceImpl implements ExchangeService {
 	@Override
 	public BigDecimal convertCurrencyToCzk(Currency currency, LocalDate date, BigDecimal amount) {
 		ExchangeRateDto exchangeRate = getExchangeRate(date);
+		if (exchangeRate == null) {
+			throw new IllegalArgumentException("Exchange rate for date " + date + " not found");
+		}
 		return switch (currency.getCurrencyCode()) {
 			case "CZK" -> amount;
 			case "EUR" -> exchangeRate.getEurExchangeRate().multiply(amount);

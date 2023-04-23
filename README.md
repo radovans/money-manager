@@ -37,31 +37,26 @@ Main features:
 - Caching data using Redis - asynchronous saving
 
 TODO backlog:
-IMPORT:
-- upload button in import page which will accept csv file with transactions
-- response from parsed transactions should return list of successfully parsed transactions and list of errors
-- upload button in import page which will accept json configuration
-- 
-EXPENSES:
-- create bar chart for spending by expense nature (must, need, want)
-
-COMMON:
-- import transactions should use stepper https://mui.com/material-ui/react-stepper/ , first step is upload csv file,
-  second step is validate data, show errors and update data, third step is save data
-- create table for cash flow
-- create table for assets and liabilities
-- create line chart for predicting future balance, income and expenses
-- add icons to categories
-- add expense type by nature (must, need, want)
-- add transaction type (Direct debit, Standing order, Regular payment, Subscription, One-time payment)
-- create docker-compose with database, backend and frontend
-- use exchange service to convert currencies when creating transactions
-- use spring profiles
-
-FIX - http://localhost:8088/categories?category=null
-
-Líniový graf - Kumulovaný vývoj zostatku - vs minulé obdobie v percentách
-Prijem a vydaje opacnymi smermi v jednom grafe. Prijmy hore vydaje dole
-Kalendar s dennym spendingom/income a kumulativnym
-Porovnanie jednotlivych period
-Last year, this year, difference, in percent
+- IMPORT:
+  - upload button in import page which will accept csv file with transactions
+  - response from parsed transactions should return list of successfully parsed transactions and list of errors
+  - upload button in import page which will accept json configuration
+- EXPENSES:
+  - create bar chart for spending by expense nature (must, need, want)
+- COMMON:
+  - import transactions should use stepper https://mui.com/material-ui/react-stepper/ , first step is upload csv file,
+    second step is validate data, show errors and update data, third step is save data
+  - create table for cash flow
+  - create table for assets and liabilities
+  - create line chart for predicting future balance, income and expenses
+  - add icons to categories
+  - add expense type by nature (must, need, want)
+  - add transaction type (Direct debit, Standing order, Regular payment, Subscription, One-time payment)
+  - create docker-compose with database, backend and frontend
+  - use exchange service to convert currencies when creating transactions
+  - use spring profiles
+- BUGFIXES:
+  - http://localhost:8088/categories?category=null
+- TECHNOLOGIES:
+  - unleash
+  - keycloak

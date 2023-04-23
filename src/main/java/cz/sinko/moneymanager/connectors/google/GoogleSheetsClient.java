@@ -1,21 +1,20 @@
 package cz.sinko.moneymanager.connectors.google;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
+import cz.sinko.moneymanager.connectors.service.dto.ExchangeRateDto;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-import cz.sinko.moneymanager.connectors.service.dto.ExchangeRateDto;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -58,11 +57,15 @@ public class GoogleSheetsClient {
 		return exchangeRateDtos;
 	}
 
-	@NonNull
 	private static ExchangeRateDto createExchangeRateDto(List<String> row) {
 		ExchangeRateDto exchangeRateDto = new ExchangeRateDto();
 		exchangeRateDto.setDate(LocalDate.parse(row.get(0), DateTimeFormatter.ofPattern(DATE_FORMAT)));
-		exchangeRateDto.setEurExchangeRate(new BigDecimal(row.get(1).replace(",", ".")));
+		try {
+			exchangeRateDto.setEurExchangeRate(new BigDecimal(row.get(1).replace(",", ".")));
+		} catch (NumberFormatException e) {
+			log.error("Error parsing for date: {}, exchange rate: {}", exchangeRateDto.getDate(), row.get(1));
+			return null;
+		}
 		return exchangeRateDto;
 	}
 
